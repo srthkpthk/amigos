@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "798101090840",
+    "firebase_url": "https://amigos-srthk.firebaseio.com",
+    "project_id": "amigos-srthk",
+    "storage_bucket": "amigos-srthk.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:798101090840:android:a4da42c585c94594ce496d",
+        "android_client_info": {
+          "package_name": "srthk.pthk.amigos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "798101090840-umnjc3b18l43h492fa9ebk3r76u1sng6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "srthk.pthk.amigos",
+            "certificate_hash": "b88d1d1e4efe8da4f286874d1235a01ec8c2e8cc"
+          }
+        },
+        {
+          "client_id": "798101090840-87n677mglkggctpb7ange4tfp3ejp1lk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtbfDJpPRAtv3fVncpB5G-z7Zp8-GqiRs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "798101090840-87n677mglkggctpb7ange4tfp3ejp1lk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

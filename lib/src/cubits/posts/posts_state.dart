@@ -24,7 +24,7 @@ class PostRefresh extends PostsState {
 }
 
 class PostsLoaded extends PostsState {
-  final Stream<PostEntity> posts;
+  final List<PostEntity> posts;
 
   PostsLoaded(this.posts);
 }

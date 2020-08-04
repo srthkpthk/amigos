@@ -15,7 +15,6 @@ class PostsCubit extends Cubit<PostsState> {
   PostsCubit() : super(PostsInitial());
   final _fireStore = Firestore.instance.collection('Posts');
   final _firebaseStorage = FirebaseStorage.instance.ref();
-  final StreamController<PostEntity> _postsController = StreamController();
 
   createPost(String description, File image, UserEntity userEntity,
       List<String> tags) async {
@@ -54,43 +53,30 @@ class PostsCubit extends Cubit<PostsState> {
     }
   }
 
-  getPosts(List<String> followingList) async {
-//    print('inside get');
-    _postsController.sink.add(PostEntity(
-        'id',
-        'postedAt',
-        'imagePath',
-        'description',
-        0,
-        0,
-        [],
-        [],
-        'userId',
-        User('name', false, 'profileUrl', 'userName', 'userId')));
-    _fireStore.getDocuments().then((value) {
-      if (value.documents.isEmpty) {
-        emit(PostsEmpty());
-      } else {
-        value.documents.forEach((element) {
-//          print('adding to sink ${element.data['description']}');
-          _postsController.sink.add(PostEntity.fromJsonMap(element.data));
-        });
-      }
-    }).whenComplete(() {
-      emit(PostsLoaded(_postsController.stream));
-    });
-//    _fireStore.snapshots().listen((event) {
-//      event.documentChanges.forEach((element) {
-//        _postsController.sink
-//            .add(PostEntity.fromJsonMap(element.document.data));
-////        print('added ${element.document.data}  to PostList');
-//      });
-//    });
+  getPosts(List<String> followingList) {
+    List<PostEntity> _posts = [];
+    try {
+      emit(PostsLoading());
+      _fireStore
+//          .where('userId', whereIn: ['KrqGHRlD3wRWb0sumzKafwvd2hg2'])
+          .orderBy('postedAt', descending: true)
+          .snapshots()
+          .listen((event) {
+        if (event.documents.isEmpty) {
+          emit(PostsEmpty());
+        } else {
+          _posts = [];
+          event.documents.forEach((element) {
+            _posts.add(PostEntity.fromDocument(element));
+            emit(PostsLoaded(_posts));
+          });
+        }
+      });
+    } catch (e) {
+      emit(PostsError('Post Load Error'));
+    }
   }
 
-  @override
-  Future<void> close() {
-    _postsController.close();
-    return super.close();
-  }
+  addLike(List<String> likedList, String postId) =>
+      _fireStore.document(postId).updateData({'likeList': likedList});
 }

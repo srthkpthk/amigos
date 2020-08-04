@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:amigos/src/cubits/posts/posts_cubit.dart';
 import 'package:amigos/src/model/postModel/PostEntity.dart';
 import 'package:amigos/src/model/userModel/UserEntity.dart';
@@ -82,8 +80,7 @@ class HomeScreen extends StatelessWidget {
             cubit: _postsCubit,
             builder: (BuildContext context, state) {
               if (state is PostsInitial) {
-                _postsCubit
-                    .getPosts(_userEntity.followingList..add(_userEntity.id));
+                _postsCubit.getPosts(_userEntity.followingList);
                 return Center(
                   child: CircularProgressIndicator(),
                 );
@@ -98,8 +95,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       FlatButton(
                         onPressed: () {
-                          _postsCubit.getPosts(
-                              _userEntity.followingList..add(_userEntity.id));
+                          _postsCubit.getPosts(_userEntity.followingList);
                         },
                         child: Text('Retry'),
                       )
@@ -117,8 +113,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       FlatButton(
                         onPressed: () {
-                          _postsCubit.getPosts(
-                              _userEntity.followingList..add(_userEntity.id));
+                          _postsCubit.getPosts(_userEntity.followingList);
                         },
                         child: Text('Retry'),
                       )
@@ -127,14 +122,15 @@ class HomeScreen extends StatelessWidget {
                 );
               }
               if (state is PostsLoaded) {
-                List<PostEntity> _posts = [];
-                state.posts.listen((event) => _posts.add(event));
-
-                return ListView.builder(
-                  itemCount: _posts.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return _buildListChild(_posts[index]);
-                  },
+                return RefreshIndicator(
+                  onRefresh: () async =>
+                      await _postsCubit.getPosts(_userEntity.followingList),
+                  child: ListView.builder(
+                    itemCount: state.posts.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return _buildListChild(state.posts[index]);
+                    },
+                  ),
                 );
               } else {
                 return Center(
@@ -148,5 +144,98 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  _buildListChild(PostEntity post) => Text(post.description);
+  _buildListChild(PostEntity post) => Card(
+        margin: EdgeInsets.all(5),
+        child: Column(
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CachedNetworkImage(
+                        imageUrl: post.user.profileUrl,
+                        width: 40,
+                        height: 40,
+                      ),
+                    ),
+                    VerticalDivider(),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          '@${post.user.userName} •',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 13),
+                        ),
+                        Text(post.user.name)
+                      ],
+                    ),
+                  ],
+                ),
+                IconButton(icon: Icon(Icons.more_vert), onPressed: () {})
+              ],
+            ),
+            Divider(
+              indent: 10,
+              endIndent: 10,
+              color: Colors.grey,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Text(
+                    post.description,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                post.imagePath == null
+                    ? Container()
+                    : Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: CachedNetworkImage(
+                              imageUrl: post.imagePath,
+                              progressIndicatorBuilder: (_, __, ___) =>
+                                  CircularProgressIndicator(),
+                            )),
+                      )
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                IconButton(
+                    icon: Icon(
+                      post.likeList.contains(_userEntity.id)
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      color: Colors.pink,
+                    ),
+                    onPressed: () {
+                      if (post.likeList.contains(_userEntity.id)) {
+                        _postsCubit.addLike(
+                            post.likeList..remove(_userEntity.id), post.id);
+                      } else {
+                        _postsCubit.addLike(
+                            post.likeList..add(_userEntity.id), post.id);
+                      }
+                    }),
+                SizedBox(
+                  width: 10,
+                ),
+                IconButton(icon: Icon(Icons.message), onPressed: () {}),
+              ],
+            )
+          ],
+        ),
+      );
 }

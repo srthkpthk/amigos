@@ -1,4 +1,5 @@
 import 'package:amigos/src/model/postModel/user.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PostEntity {
   String id;
@@ -24,17 +25,17 @@ class PostEntity {
       this.userId,
       this.user);
 
-  PostEntity.fromJsonMap(Map<String, dynamic> map)
-      : id = map["id"],
-        postedAt = map["postedAt"],
-        imagePath = map["imagePath"],
-        description = map["description"],
-        likesCount = map["likesCount"],
-        commentsCount = map["commentsCount"],
-        likeList = List<String>.from(map["likeList"]),
-        tags = List<String>.from(map["tags"]),
-        userId = map["userId"],
-        user = User.fromJsonMap(map["user"]);
+  PostEntity.fromDocument(DocumentSnapshot documentSnapshot)
+      : id = documentSnapshot.documentID,
+        postedAt = documentSnapshot.data["postedAt"],
+        imagePath = documentSnapshot.data["imagePath"],
+        description = documentSnapshot.data["description"],
+        likesCount = documentSnapshot.data["likesCount"],
+        commentsCount = documentSnapshot.data["commentsCount"],
+        likeList = List<String>.from(documentSnapshot.data["likeList"]),
+        tags = List<String>.from(documentSnapshot.data["tags"]),
+        userId = documentSnapshot.data["userId"],
+        user = User.fromJsonMap(documentSnapshot.data["user"]);
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();

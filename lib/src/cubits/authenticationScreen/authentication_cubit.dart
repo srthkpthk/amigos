@@ -49,7 +49,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
             'New User',
             DateTime.now().subtract(Duration(days: 100)).toString(),
             user.email,
-            FirebaseMessaging().getToken().toString(),
+            await FirebaseMessaging().getToken(),
             0,
             0,
             [],
@@ -60,10 +60,12 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
             'Earth',
             user.displayName,
             user.photoUrl,
-            '${user.displayName.replaceAll(' ', '')}${Random(100)}');
+            '${user.displayName.replaceAll(' ', '').toLowerCase()}${Random().nextInt(10000000)}');
         _collectionReference.document(user.uid).setData(_user.toJson());
         emit(AuthenticationSuccessful(_user));
       }
+    } on NoSuchMethodError {
+      emit(AuthenticationError('Google Authentication Failed Please Retry'));
     } catch (e) {
       emit(AuthenticationError(AuthExceptionHandler.generateExceptionMessage(
           AuthExceptionHandler.handleException(e))));
@@ -78,6 +80,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         confirmPassword: confirmPassword,
         name: name)) {
       try {
+        emit(AuthenticationLoading());
         AuthResult _user = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
         _sharedPreferencesHelper.saveUid(_user.user.uid);
@@ -85,7 +88,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
                 'New User',
                 DateTime.now().subtract(Duration(days: 100)).toString(),
                 email,
-                FirebaseMessaging().getToken().toString(),
+                await FirebaseMessaging().getToken(),
                 0,
                 0,
                 [],
@@ -96,7 +99,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
                 'Earth',
                 name,
                 'https://firebasestorage.googleapis.com/v0/b/amigos-srthk.appspot.com/o/Commons%2FAm.png?alt=media&token=352d57e5-b88d-40f9-a28f-2cff26f43bba',
-                '${name.replaceAll(' ', '')}${Random(100)}')
+                '${name.replaceAll(' ', '').toLowerCase()}${Random().nextInt(10000000)}')
             .toJson());
       } catch (e) {
         emit(AuthenticationError(AuthExceptionHandler.generateExceptionMessage(

@@ -34,13 +34,12 @@ class PostsCubit extends Cubit<PostsState> {
             .child('Posts/Users/${userEntity.id}/${image.path}')
             .getDownloadURL();
       }
+
       _fireStore.add(PostEntity(
               'id',
               DateTime.now().toString(),
               _imageUrl,
               description,
-              0,
-              0,
               [],
               tags,
               userEntity.id,

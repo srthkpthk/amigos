@@ -5,6 +5,7 @@ import 'package:amigos/src/model/userModel/UserEntity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_chip_tags/flutter_chip_tags.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:toast/toast.dart';
 
@@ -20,9 +21,11 @@ class CreatePostScreen extends StatefulWidget {
 }
 
 class _CreatePostScreenState extends State<CreatePostScreen> {
+  List<String> _tags = [];
   final picker = ImagePicker();
   File _image;
-  final TextEditingController _editingController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _tagsController = TextEditingController();
   final _bloc = PostsCubit();
   @override
   Widget build(BuildContext context) {
@@ -88,9 +91,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                           ),
                           FloatingActionButton(
                             onPressed: () => _bloc.createPost(
-                                _editingController.text,
+                                _descriptionController.text,
                                 _image,
-                                widget._userEntity, []),
+                                widget._userEntity,
+                                _tags),
                             child: Icon(Icons.done),
                           )
                         ],
@@ -100,35 +104,48 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     width: 2,
                   ),
                   Expanded(
-                    child: Column(
-                      children: <Widget>[
-                        TextField(
-                          showCursor: false,
-                          keyboardType: TextInputType.text,
-                          controller: _editingController,
-                          maxLines: 4,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20),
-                          textCapitalization: TextCapitalization.sentences,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            labelStyle: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                            labelText: 'Share Some Thoughts...',
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: <Widget>[
+                          TextField(
+                            showCursor: false,
+                            keyboardType: TextInputType.text,
+                            controller: _descriptionController,
+                            maxLines: 4,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20),
+                            textCapitalization: TextCapitalization.sentences,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              labelStyle: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                              labelText: 'Share Some Thoughts...',
+                            ),
                           ),
-                        ),
-                        _image == null
-                            ? Container()
-                            : Divider(
-                                thickness: 2,
-                              ),
-                        _image == null
-                            ? Container()
-                            : ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
-                                child: Image.file(_image),
-                              )
-                      ],
+                          ChipTags(
+                            list: _tags,
+                            chipColor: Theme.of(context).accentColor,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              labelStyle: TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.bold),
+                              labelText: 'Separate tags with spaces',
+                            ),
+                          ),
+                          _image == null
+                              ? Container()
+                              : Divider(
+                                  thickness: 2,
+                                ),
+                          _image == null
+                              ? Container()
+                              : ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Image.file(_image),
+                                )
+                        ],
+                      ),
                     ),
                   ),
                 ],

@@ -1,11 +1,18 @@
+import 'dart:developer';
+
 import 'package:amigos/src/cubits/posts/posts_cubit.dart';
 import 'package:amigos/src/model/postModel/PostEntity.dart';
 import 'package:amigos/src/model/userModel/UserEntity.dart';
 import 'package:amigos/src/ui/homeScreen/create_post_screen.dart';
+import 'package:amigos/src/ui/widgets/post.dart';
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_chip_tags/flutter_chip_tags.dart';
+import 'package:photo_view/photo_view.dart';
+import 'package:random_color/random_color.dart';
+import 'package:swipedetector/swipedetector.dart';
 
 import '../../../res.dart';
 
@@ -43,10 +50,13 @@ class HomeScreen extends StatelessWidget {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(10),
-                  child: CachedNetworkImage(
-                    width: 50,
-                    height: 50,
-                    imageUrl: _userEntity.profileUrl,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: CachedNetworkImage(
+                      width: 50,
+                      height: 50,
+                      imageUrl: _userEntity.profileUrl,
+                    ),
                   ),
                 ),
                 Column(
@@ -128,7 +138,7 @@ class HomeScreen extends StatelessWidget {
                   child: ListView.builder(
                     itemCount: state.posts.length,
                     itemBuilder: (BuildContext context, int index) {
-                      return _buildListChild(state.posts[index]);
+                      return Post(state.posts[index], _userEntity);
                     },
                   ),
                 );
@@ -143,99 +153,4 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-
-  _buildListChild(PostEntity post) => Card(
-        margin: EdgeInsets.all(5),
-        child: Column(
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: CachedNetworkImage(
-                        imageUrl: post.user.profileUrl,
-                        width: 40,
-                        height: 40,
-                      ),
-                    ),
-                    VerticalDivider(),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          '@${post.user.userName} •',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 13),
-                        ),
-                        Text(post.user.name)
-                      ],
-                    ),
-                  ],
-                ),
-                IconButton(icon: Icon(Icons.more_vert), onPressed: () {})
-              ],
-            ),
-            Divider(
-              indent: 10,
-              endIndent: 10,
-              color: Colors.grey,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Text(
-                    post.description,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                post.imagePath == null
-                    ? Container()
-                    : Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: CachedNetworkImage(
-                              imageUrl: post.imagePath,
-                              progressIndicatorBuilder: (_, __, ___) =>
-                                  CircularProgressIndicator(),
-                            )),
-                      )
-              ],
-            ),
-            Row(
-              children: <Widget>[
-                IconButton(
-                    icon: Icon(
-                      post.likeList.contains(_userEntity.id)
-                          ? Icons.favorite
-                          : Icons.favorite_border,
-                      color: Colors.pink,
-                    ),
-                    onPressed: () {
-                      if (post.likeList.contains(_userEntity.id)) {
-                        _postsCubit.addLike(
-                            post.likeList..remove(_userEntity.id), post.id);
-                      } else {
-                        _postsCubit.addLike(
-                            post.likeList..add(_userEntity.id), post.id);
-                      }
-                    }),
-                SizedBox(
-                  width: 10,
-                ),
-                IconButton(icon: Icon(Icons.message), onPressed: () {}),
-              ],
-            )
-          ],
-        ),
-      );
 }

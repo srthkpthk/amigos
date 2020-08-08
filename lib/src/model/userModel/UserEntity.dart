@@ -1,3 +1,5 @@
+import 'package:random_color/random_color.dart';
+
 class UserEntity {
   final String bio;
   final String dateOfBirth;

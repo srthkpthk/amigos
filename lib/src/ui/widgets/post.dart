@@ -3,6 +3,7 @@ import 'package:amigos/src/model/postModel/PostEntity.dart';
 import 'package:amigos/src/model/userModel/UserEntity.dart';
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_share/flutter_share.dart';
 import 'package:photo_view/photo_view.dart';
@@ -111,7 +112,7 @@ class Post extends StatelessWidget {
                                       'Check what ${post.user.name} posted in Amigos',
                                   text:
                                       'Check what ${post.user.name} posted in Amigos',
-                                  linkUrl: post.imagePath,
+                                  linkUrl: await _postCubit.getDynamicLink(post.id),
                                   //todo add post link
                                   chooserTitle: 'Share to Friends');
                             },
@@ -237,4 +238,6 @@ class Post extends StatelessWidget {
       _postCubit.addLike(post.likeList..add(_userEntity.id), post.id);
     }
   }
+
+
 }

@@ -7,6 +7,7 @@ import 'package:amigos/src/model/postModel/user.dart';
 import 'package:amigos/src/model/userModel/UserEntity.dart';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:meta/meta.dart';
 
@@ -82,5 +83,24 @@ class PostsCubit extends Cubit<PostsState> {
 
   deletePost(String id) {
     _fireStore.document(id).delete();
+  }
+
+  getDynamicLink(String id) async {
+    var parameters = await DynamicLinkParameters(
+      uriPrefix: 'https://srthk.page.link',
+      androidParameters: AndroidParameters(
+        packageName: 'srthk.pthk.amigos',
+        minimumVersion: 125,
+      ),
+      iosParameters: IosParameters(
+        bundleId: 'com.example.ios',
+        minimumVersion: '1.0.1',
+        appStoreId: '123456789',
+      ),
+      link: Uri.parse('https://srthk.page.link/post=$id'),
+    ).buildShortLink();
+    final Uri shortUrl = parameters.shortUrl;
+    print(shortUrl);
+    return shortUrl.toString();
   }
 }

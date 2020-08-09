@@ -4,7 +4,10 @@ import 'package:amigos/src/model/userModel/UserEntity.dart';
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:swipedetector/swipedetector.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class Post extends StatelessWidget {
   final PostEntity post;
@@ -16,7 +19,8 @@ class Post extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 1,
+      elevation: 5,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       margin: EdgeInsets.all(5),
       child: Column(
         children: <Widget>[
@@ -26,7 +30,7 @@ class Post extends StatelessWidget {
               Row(
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(10),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: CachedNetworkImage(
@@ -40,17 +44,94 @@ class Post extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(
-                        '@${post.user.userName} •',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 13),
+                      Row(
+                        children: [
+                          Text(
+                            '@${post.user.userName} • ',
+                            overflow: TextOverflow.fade,
+                            softWrap: true,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 13),
+                          ),
+                          Text(
+                            timeago.format(DateTime.parse(post.postedAt),
+                                allowFromNow: true, locale: 'en_short'),
+                            overflow: TextOverflow.fade,
+                            softWrap: true,
+                          )
+                        ],
                       ),
                       Text(post.user.name)
                     ],
                   ),
                 ],
               ),
-              IconButton(icon: Icon(Icons.more_vert), onPressed: () {})
+              IconButton(
+                icon: Icon(Icons.more_vert),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    enableDrag: true,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16)),
+                    builder: (BuildContext context) => Container(
+                      padding: EdgeInsets.all(25),
+                      child: Wrap(
+                        runSpacing: 5,
+                        children: [
+                          _userEntity.id == post.user.userId
+                              ? ListTile(
+                                  title: Text(
+                                    'Delete Post',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                  onTap: () => _postCubit.deletePost(post.id),
+                                  leading: Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
+                                )
+                              : Container(),
+                          _userEntity.id == post.user.userId
+                              ? ListTile(
+                                  title: Text(
+                                    'Edit Post',
+                                  ),
+                                  leading: Icon(
+                                    Icons.edit,
+                                  ),
+                                )
+                              : Container(),
+                          ListTile(
+                            title: Text('Share'),
+                            leading: Icon(Icons.share),
+                            onTap: () async {
+                              await FlutterShare.share(
+                                  title:
+                                      'Check what ${post.user.name} posted in Amigos',
+                                  text:
+                                      'Check what ${post.user.name} posted in Amigos',
+                                  linkUrl: post.imagePath,
+                                  //todo add post link
+                                  chooserTitle: 'Share to Friends');
+                            },
+                          ),
+                          _userEntity.id != post.user.userId
+                              ? ListTile(
+                                  title: Text(
+                                    'Report',
+                                  ),
+                                  leading: Icon(
+                                    Icons.change_history,
+                                  ),
+                                )
+                              : Container(),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              )
             ],
           ),
           Divider(
@@ -68,22 +149,20 @@ class Post extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
                 ),
               ),
-              SizedBox(
-                height: 10,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Wrap(
-                    spacing: 6,
-                    runSpacing: 5,
-                    children: post.tags.map((e) {
-                      return Chip(
-                          padding: EdgeInsets.all(8),
-                          backgroundColor: Theme.of(context).accentColor,
-                          labelStyle: TextStyle(color: Colors.white),
-                          label: Text('#$e'));
-                    }).toList()),
-              ),
+              if (post.tags.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Wrap(
+                      spacing: 6,
+                      runSpacing: 5,
+                      children: post.tags.map((e) {
+                        return Chip(
+                            padding: EdgeInsets.all(8),
+                            backgroundColor: Theme.of(context).accentColor,
+                            labelStyle: TextStyle(color: Colors.white),
+                            label: Text('#$e'));
+                      }).toList()),
+                ),
               if (post.imagePath == null)
                 Container()
               else
@@ -100,17 +179,22 @@ class Post extends StatelessWidget {
                             child: CachedNetworkImage(
                               imageUrl: post.imagePath,
                               progressIndicatorBuilder: (_, __, ___) =>
-                                  CircularProgressIndicator(),
+                                  CircularProgressIndicator(
+                                value: ___.downloaded.toDouble(),
+                              ),
                             ),
                           ));
                     },
                     openBuilder: (BuildContext context,
                         void Function({Object returnValue}) action) {
-                      return PhotoView(
-                          loadingBuilder: (_, __) =>
-                              Center(child: CircularProgressIndicator()),
-                          imageProvider:
-                              CachedNetworkImageProvider(post.imagePath));
+                      return SwipeDetector(
+                        onSwipeDown: () => Navigator.pop(context),
+                        child: PhotoView(
+                            loadingBuilder: (_, __) =>
+                                Center(child: CircularProgressIndicator()),
+                            imageProvider:
+                                CachedNetworkImageProvider(post.imagePath)),
+                      );
                     },
                   ),
                 )

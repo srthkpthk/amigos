@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:amigos/src/model/postModel/PostEntity.dart';
@@ -78,4 +79,8 @@ class PostsCubit extends Cubit<PostsState> {
 
   addLike(List<String> likedList, String postId) =>
       _fireStore.document(postId).updateData({'likeList': likedList});
+
+  deletePost(String id) {
+    _fireStore.document(id).delete();
+  }
 }

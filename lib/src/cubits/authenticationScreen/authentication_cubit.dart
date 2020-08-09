@@ -60,7 +60,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
             'Earth',
             user.displayName,
             user.photoUrl,
-            '${user.displayName.replaceAll(' ', '').toLowerCase()}${Random().nextInt(10000000)}');
+            '${user.displayName.replaceAll(' ', '').toLowerCase()}${Random().nextInt(100)}');
         _collectionReference.document(user.uid).setData(_user.toJson());
         emit(AuthenticationSuccessful(_user));
       }
@@ -99,7 +99,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
                 'Earth',
                 name,
                 'https://firebasestorage.googleapis.com/v0/b/amigos-srthk.appspot.com/o/Commons%2FAm.png?alt=media&token=352d57e5-b88d-40f9-a28f-2cff26f43bba',
-                '${name.replaceAll(' ', '').toLowerCase()}${Random().nextInt(10000000)}')
+                '${name.replaceAll(' ', '').toLowerCase()}${Random().nextInt(100)}')
             .toJson());
       } catch (e) {
         emit(AuthenticationError(AuthExceptionHandler.generateExceptionMessage(

@@ -102,7 +102,10 @@ class SignUpScreen extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                             builder: (BuildContext context) => SignInScreen())),
-                    child: Text('Sign In'))
+                    child: Text(
+                      'SignUp',
+                      style: TextStyle(color: Theme.of(context).accentColor),
+                    ))
               ],
             ),
           ),

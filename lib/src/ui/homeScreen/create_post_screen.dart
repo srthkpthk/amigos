@@ -106,45 +106,47 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: <Widget>[
-                          TextField(
-                            showCursor: false,
-                            keyboardType: TextInputType.text,
-                            controller: _descriptionController,
-                            maxLines: 4,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20),
-                            textCapitalization: TextCapitalization.sentences,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              labelStyle: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                              labelText: 'Share Some Thoughts...',
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: <Widget>[
+                            TextField(
+                              showCursor: false,
+                              keyboardType: TextInputType.text,
+                              controller: _descriptionController,
+                              maxLines: 4,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 20),
+                              textCapitalization: TextCapitalization.sentences,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                labelStyle: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                                labelText: 'Share Some Thoughts...',
+                              ),
                             ),
-                          ),
-                          ChipTags(
-                            list: _tags,
-                            chipColor: Theme.of(context).accentColor,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              labelStyle: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.bold),
-                              labelText: 'Separate tags with spaces',
+                            ChipTags(
+                              list: _tags,
+                              chipColor: Theme.of(context).accentColor,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                labelStyle: TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.bold),
+                                labelText: 'Separate tags with spaces',
+                              ),
                             ),
-                          ),
-                          _image == null
-                              ? Container()
-                              : Divider(
-                                  thickness: 2,
-                                ),
-                          _image == null
-                              ? Container()
-                              : ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Image.file(_image),
-                                )
-                        ],
+                            _image == null
+                                ? Container()
+                                : Divider(
+                                    thickness: 2,
+                                  ),
+                            _image == null
+                                ? Container()
+                                : ClipRRect(
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: Image.file(_image),
+                                  )
+                          ],
+                        ),
                       ),
                     ),
                   ),

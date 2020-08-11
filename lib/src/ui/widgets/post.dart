@@ -3,17 +3,21 @@ import 'package:amigos/src/model/postModel/PostEntity.dart';
 import 'package:amigos/src/model/userModel/UserEntity.dart';
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_share/flutter_share.dart';
+import 'package:flutter_share_me/flutter_share_me.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:swipedetector/swipedetector.dart';
-import 'package:timeago/timeago.dart' as timeago;
+import 'package:timeago/timeago.dart' as timeAgo;
+import 'package:toast/toast.dart';
 
 class Post extends StatelessWidget {
   final PostEntity post;
   final UserEntity _userEntity;
   final _postCubit = PostsCubit();
+  final _defaultCacheManager = DefaultCacheManager();
 
   Post(this.post, this._userEntity);
 
@@ -35,6 +39,7 @@ class Post extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: CachedNetworkImage(
+                        cacheManager: _defaultCacheManager,
                         imageUrl: post.user.profileUrl,
                         width: 40,
                         height: 40,
@@ -49,13 +54,14 @@ class Post extends StatelessWidget {
                         children: [
                           Text(
                             '@${post.user.userName} • ',
+                            textWidthBasis: TextWidthBasis.longestLine,
                             overflow: TextOverflow.fade,
                             softWrap: true,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 13),
                           ),
                           Text(
-                            timeago.format(DateTime.parse(post.postedAt),
+                            timeAgo.format(DateTime.parse(post.postedAt),
                                 allowFromNow: true, locale: 'en_short'),
                             overflow: TextOverflow.fade,
                             softWrap: true,
@@ -69,7 +75,7 @@ class Post extends StatelessWidget {
               ),
               IconButton(
                 icon: Icon(Icons.more_vert),
-                onPressed: () {
+                onPressed: () async {
                   showModalBottomSheet(
                     context: context,
                     enableDrag: true,
@@ -86,7 +92,10 @@ class Post extends StatelessWidget {
                                     'Delete Post',
                                     style: TextStyle(color: Colors.red),
                                   ),
-                                  onTap: () => _postCubit.deletePost(post.id),
+                                  onTap: () {
+                                    Navigator.of(context).pop();
+                                    _postCubit.deletePost(post.id);
+                                  },
                                   leading: Icon(
                                     Icons.delete,
                                     color: Colors.red,
@@ -107,16 +116,35 @@ class Post extends StatelessWidget {
                             title: Text('Share'),
                             leading: Icon(Icons.share),
                             onTap: () async {
+                              Navigator.of(context).pop();
                               await FlutterShare.share(
                                   title:
                                       'Check what ${post.user.name} posted in Amigos',
                                   text:
                                       'Check what ${post.user.name} posted in Amigos',
-                                  linkUrl: await _postCubit.getDynamicLink(post.id),
+                                  linkUrl:
+                                      await _postCubit.getDynamicLink(post.id),
                                   //todo add post link
                                   chooserTitle: 'Share to Friends');
                             },
                           ),
+                          post.imagePath == null
+                              ? Container()
+                              : ListTile(
+                                  title: Text('Share to WhatsApp'),
+                                  leading: FaIcon(
+                                    FontAwesomeIcons.whatsapp,
+                                    color: Color.fromRGBO(37, 211, 102, 1),
+                                  ),
+                                  onTap: () async {
+                                    Navigator.of(context).pop();
+                                    FlutterShareMe().shareToWhatsApp(
+                                        msg:
+                                            'Hey! Check What *${post.user.name}* Shared on Amigos. (  *${post.description}*  ) ',
+                                        base64Image:
+                                            'data:image/jpeg;base64,${await _postCubit.getBase64Image(_defaultCacheManager.getSingleFile(post.imagePath))}');
+                                  },
+                                ),
                           _userEntity.id != post.user.userId
                               ? ListTile(
                                   title: Text(
@@ -125,6 +153,14 @@ class Post extends StatelessWidget {
                                   leading: Icon(
                                     Icons.change_history,
                                   ),
+                                  onTap: () {
+                                    Navigator.of(context).pop();
+                                    Toast.show(
+                                        '${post.user.name}\'s Post ${post.description} has been reported to the admins for Reviewing purpose. Check other Posts in meantime',
+                                        context,
+                                        duration: 3);
+                                    _postCubit.reportPost(post, _userEntity);
+                                  },
                                 )
                               : Container(),
                         ],
@@ -178,6 +214,7 @@ class Post extends StatelessWidget {
                           child: GestureDetector(
                             onDoubleTap: () => _alterLike(post),
                             child: CachedNetworkImage(
+                              cacheManager: _defaultCacheManager,
                               imageUrl: post.imagePath,
                               progressIndicatorBuilder: (_, __, ___) =>
                                   CircularProgressIndicator(
@@ -238,6 +275,4 @@ class Post extends StatelessWidget {
       _postCubit.addLike(post.likeList..add(_userEntity.id), post.id);
     }
   }
-
-
 }

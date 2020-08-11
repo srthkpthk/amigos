@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "798101090840-umnjc3b18l43h492fa9ebk3r76u1sng6.apps.googleusercontent.com",
+          "client_id": "798101090840-qgnbhugvr718cuh9evlrmvcs66tmhs97.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "srthk.pthk.amigos",
-            "certificate_hash": "b88d1d1e4efe8da4f286874d1235a01ec8c2e8cc"
+            "certificate_hash": "04a1554e0976b9ddb9803781fc6868f12280b4ca"
           }
         },
         {

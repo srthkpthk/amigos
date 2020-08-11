@@ -25,8 +25,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   final picker = ImagePicker();
   File _image;
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _tagsController = TextEditingController();
   final _bloc = PostsCubit();
+
   @override
   Widget build(BuildContext context) {
     return BlocListener(

@@ -1,5 +1,4 @@
-import 'dart:async';
-import 'dart:developer';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:amigos/src/model/postModel/PostEntity.dart';
@@ -15,7 +14,8 @@ part 'posts_state.dart';
 
 class PostsCubit extends Cubit<PostsState> {
   PostsCubit() : super(PostsInitial());
-  final _fireStore = Firestore.instance.collection('Posts');
+  final _postFirestore = Firestore.instance.collection('Posts');
+  final _reportsFirestore = Firestore.instance.collection('Reports');
   final _firebaseStorage = FirebaseStorage.instance.ref();
 
   createPost(String description, File image, UserEntity userEntity,
@@ -37,7 +37,7 @@ class PostsCubit extends Cubit<PostsState> {
             .getDownloadURL();
       }
 
-      _fireStore.add(PostEntity(
+      _postFirestore.add(PostEntity(
               'id',
               DateTime.now().toString(),
               _imageUrl,
@@ -58,7 +58,7 @@ class PostsCubit extends Cubit<PostsState> {
     List<PostEntity> _posts = [];
     try {
       emit(PostsLoading());
-      _fireStore
+      _postFirestore
 //          .where('userId', whereIn: ['KrqGHRlD3wRWb0sumzKafwvd2hg2'])
           .orderBy('postedAt', descending: true)
           .snapshots()
@@ -79,11 +79,9 @@ class PostsCubit extends Cubit<PostsState> {
   }
 
   addLike(List<String> likedList, String postId) =>
-      _fireStore.document(postId).updateData({'likeList': likedList});
+      _postFirestore.document(postId).updateData({'likeList': likedList});
 
-  deletePost(String id) {
-    _fireStore.document(id).delete();
-  }
+  deletePost(String id) => _postFirestore.document(id).delete();
 
   getDynamicLink(String id) async {
     var parameters = await DynamicLinkParameters(
@@ -102,5 +100,14 @@ class PostsCubit extends Cubit<PostsState> {
     final Uri shortUrl = parameters.shortUrl;
     print(shortUrl);
     return shortUrl.toString();
+  }
+
+  getBase64Image(Future<File> singleFile) async {
+    File _file = await singleFile;
+    return base64Encode(_file.readAsBytesSync());
+  }
+
+  void reportPost(PostEntity post, UserEntity userEntity) async {
+    _reportsFirestore.add({'post': post.toJson(), 'by': userEntity.toJson()});
   }
 }

@@ -1,7 +1,4 @@
-import 'dart:developer';
-
 import 'package:amigos/src/cubits/posts/posts_cubit.dart';
-import 'package:amigos/src/model/postModel/PostEntity.dart';
 import 'package:amigos/src/model/userModel/UserEntity.dart';
 import 'package:amigos/src/ui/homeScreen/create_post_screen.dart';
 import 'package:amigos/src/ui/widgets/post.dart';
@@ -9,16 +6,13 @@ import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_chip_tags/flutter_chip_tags.dart';
-import 'package:photo_view/photo_view.dart';
-import 'package:random_color/random_color.dart';
-import 'package:swipedetector/swipedetector.dart';
 
 import '../../../res.dart';
 
 class HomeScreen extends StatelessWidget {
   final UserEntity _userEntity;
   final _postsCubit = PostsCubit();
+
   HomeScreen(this._userEntity);
 
   @override
@@ -132,15 +126,11 @@ class HomeScreen extends StatelessWidget {
                 );
               }
               if (state is PostsLoaded) {
-                return RefreshIndicator(
-                  onRefresh: () async =>
-                      await _postsCubit.getPosts(_userEntity.followingList),
-                  child: ListView.builder(
-                    itemCount: state.posts.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Post(state.posts[index], _userEntity);
-                    },
-                  ),
+                return ListView.builder(
+                  itemCount: state.posts.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Post(state.posts[index], _userEntity);
+                  },
                 );
               } else {
                 return Center(

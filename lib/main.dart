@@ -8,7 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
   runApp(DevicePreview(
-    enabled: false,
+    enabled: true,
     builder: (BuildContext context) => App(),
   ));
 }

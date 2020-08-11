@@ -107,7 +107,7 @@ class PostsCubit extends Cubit<PostsState> {
     return base64Encode(_file.readAsBytesSync());
   }
 
-  void reportPost(PostEntity post, UserEntity userEntity) async {
-    _reportsFirestore.add({'post': post.toJson(), 'by': userEntity.toJson()});
-  }
+  reportPost(PostEntity post, UserEntity userEntity) async => _reportsFirestore
+      .document(post.id)
+      .setData({'post': post.toJson(), 'by': userEntity.toJson()});
 }

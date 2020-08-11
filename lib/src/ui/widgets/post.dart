@@ -52,13 +52,17 @@ class Post extends StatelessWidget {
                     children: <Widget>[
                       Row(
                         children: [
-                          Text(
-                            '@${post.user.userName} • ',
-                            textWidthBasis: TextWidthBasis.longestLine,
-                            overflow: TextOverflow.fade,
-                            softWrap: true,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 13),
+                          Container(
+                            width: MediaQuery.of(context).size.width < 400
+                                ? 60
+                                : null,
+                            child: RichText(
+                                overflow: TextOverflow.ellipsis,
+                                text: TextSpan(
+                                    text: '@${post.user.userName} • ',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13))),
                           ),
                           Text(
                             timeAgo.format(DateTime.parse(post.postedAt),

@@ -8,8 +8,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
   runApp(DevicePreview(
-    enabled: true,
-    builder: (BuildContext context) => App(),
+    enabled: false,
+    builder: (context) => App(),
   ));
 }
 
@@ -17,9 +17,9 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Amigos',
       locale: DevicePreview.of(context).locale,
       builder: DevicePreview.appBuilder,
+      title: 'Amigos',
       debugShowCheckedModeBanner: false,
       theme: ThemeUtils().lightMode,
       darkTheme: ThemeUtils().darkMode,

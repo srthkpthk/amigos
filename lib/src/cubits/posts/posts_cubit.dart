@@ -78,9 +78,6 @@ class PostsCubit extends Cubit<PostsState> {
     }
   }
 
-  addLike(List<String> likedList, String postId) =>
-      _postFirestore.document(postId).updateData({'likeList': likedList});
-
   deletePost(String id) => _postFirestore.document(id).delete();
 
   getDynamicLink(String id) async {
@@ -110,4 +107,18 @@ class PostsCubit extends Cubit<PostsState> {
   reportPost(PostEntity post, UserEntity userEntity) async => _reportsFirestore
       .document(post.id)
       .setData({'post': post.toJson(), 'by': userEntity.toJson()});
+
+  Future<bool> alterLike(
+      List<String> likeList, String id, String postId) async {
+    if (likeList.contains(id)) {
+      await _postFirestore
+          .document(postId)
+          .updateData({'likeList': likeList..remove(id)});
+    } else {
+      await _postFirestore
+          .document(postId)
+          .updateData({'likeList': likeList..add(id)});
+    }
+    return true;
+  }
 }

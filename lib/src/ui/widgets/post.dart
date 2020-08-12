@@ -28,6 +28,15 @@ class Post extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: post.flaggedBy.length == 1
+          ? Colors.red.withOpacity(.2)
+          : post.flaggedBy.length == 2
+              ? Colors.red.withOpacity(.4)
+              : post.flaggedBy.length == 3
+                  ? Colors.red.withOpacity(.6)
+                  : post.flaggedBy.length == 4
+                      ? Colors.red.withOpacity(.8)
+                      : null,
       elevation: 5,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       margin: EdgeInsets.all(5),
@@ -193,7 +202,7 @@ class Post extends StatelessWidget {
                 child: ExpansionTile(
                   leading: Icon(Icons.message),
                   title: Text(''),
-                  trailing: Text('${post.comments.length} Comments'),
+                  trailing: Text('${post} Comments'),
                   expandedCrossAxisAlignment: CrossAxisAlignment.start,
                   childrenPadding: EdgeInsets.symmetric(horizontal: 10),
                   children: [

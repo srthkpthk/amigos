@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:amigos/src/model/postModel/PostEntity.dart';
-import 'package:amigos/src/model/postModel/by.dart';
-import 'package:amigos/src/model/postModel/comments.dart';
 import 'package:amigos/src/model/postModel/user.dart';
 import 'package:amigos/src/model/userModel/UserEntity.dart';
 import 'package:bloc/bloc.dart';
@@ -39,18 +37,18 @@ class PostsCubit extends Cubit<PostsState> {
       }
 
       _postFirestore.add(PostEntity(
-          'id',
-          DateTime.now().toString(),
-          _imageUrl,
-          false,
-          description,
-          [],
-          tags,
-          [],
-          userEntity.id,
-          User(userEntity.name, userEntity.isVerified, userEntity.profileUrl,
-              userEntity.userName, userEntity.id),
-          []).toJson());
+        'id',
+        DateTime.now().toString(),
+        _imageUrl,
+        0,
+        description,
+        [],
+        tags,
+        [],
+        userEntity.id,
+        User(userEntity.name, userEntity.isVerified, userEntity.profileUrl,
+            userEntity.userName, userEntity.id),
+      ).toJson());
       emit(PostPosted());
     } catch (e) {
       emit(PostsError('There was some error creating your post'));
@@ -62,8 +60,8 @@ class PostsCubit extends Cubit<PostsState> {
     try {
       emit(PostsLoading());
       _postFirestore
-          .where('userId', whereIn: followingList)
-          .where('isFlagged', isEqualTo: false)
+//          .where('userId', whereIn: followingList)
+//          .where('flags', isLessThan: 5)
           .orderBy('postedAt', descending: true)
           .snapshots()
           .listen((event) {
@@ -129,14 +127,6 @@ class PostsCubit extends Cubit<PostsState> {
   }
 
   addComment(PostEntity post, UserEntity userEntity, String text) {
-    post.comments
-      ..add(Comments(
-          By(userEntity.name, userEntity.isVerified, userEntity.profileUrl,
-              userEntity.userName, userEntity.id),
-          text,
-          [],
-          []));
-    _postFirestore.document(post.id).updateData(
-        {'comments': post.comments.map((v) => v.toJson()).toList()});
+    _postFirestore.document(post.id).collection('Comments').add(//todo add comments feature);
   }
 }

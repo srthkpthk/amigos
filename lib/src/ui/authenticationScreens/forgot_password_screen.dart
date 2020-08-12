@@ -8,6 +8,7 @@ import '../../../res.dart';
 class ForgotPasswordScreen extends StatelessWidget {
   final _authCubit = AuthenticationCubit();
   final _emailController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,6 +48,9 @@ class ForgotPasswordScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                SizedBox(
+                  height: 16,
+                ),
                 ClipRRect(
                     borderRadius: BorderRadius.circular(16),
                     child: Image.asset(Res.intro_simgle)),

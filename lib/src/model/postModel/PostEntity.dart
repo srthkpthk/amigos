@@ -1,41 +1,47 @@
+import 'package:amigos/src/model/postModel/comments.dart';
 import 'package:amigos/src/model/postModel/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PostEntity {
-  String id;
-  String postedAt;
-  String imagePath;
-  String description;
-  List<String> likeList;
-  List<String> tags;
-  String userId;
-  User user;
-  bool isFlagged;
-  List<String> flaggedBy;
+  final String id;
+  final String postedAt;
+  final String imagePath;
+  final bool isFlagged;
+  final String description;
+  final List<String> likeList;
+  final List<String> tags;
+  final List<String> flaggedBy;
+  final String userId;
+  final User user;
+  final List<Comments> comments;
 
-  PostEntity(
+
+	PostEntity(
       this.id,
       this.postedAt,
       this.imagePath,
+      this.isFlagged,
       this.description,
       this.likeList,
       this.tags,
+      this.flaggedBy,
       this.userId,
       this.user,
-      this.isFlagged,
-      this.flaggedBy);
+      this.comments);
 
   PostEntity.fromDocument(DocumentSnapshot documentSnapshot)
       : id = documentSnapshot.documentID,
         postedAt = documentSnapshot.data["postedAt"],
         imagePath = documentSnapshot.data["imagePath"],
-        isFlagged = documentSnapshot.data['isFlagged'],
+        isFlagged = documentSnapshot.data["isFlagged"],
         description = documentSnapshot.data["description"],
         likeList = List<String>.from(documentSnapshot.data["likeList"]),
-        flaggedBy = List<String>.from(documentSnapshot.data["flaggedBy"]),
         tags = List<String>.from(documentSnapshot.data["tags"]),
+        flaggedBy = List<String>.from(documentSnapshot.data["flaggedBy"]),
         userId = documentSnapshot.data["userId"],
-        user = User.fromJsonMap(documentSnapshot.data["user"]);
+        user = User.fromJsonMap(documentSnapshot.data["user"]),
+        comments = List<Comments>.from(documentSnapshot.data["comments"]
+            .map((it) => Comments.fromJsonMap(it)));
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
@@ -49,6 +55,8 @@ class PostEntity {
     data['flaggedBy'] = flaggedBy;
     data['userId'] = userId;
     data['user'] = user == null ? null : user.toJson();
+    data['comments'] =
+        comments != null ? this.comments.map((v) => v.toJson()).toList() : null;
     return data;
   }
 }

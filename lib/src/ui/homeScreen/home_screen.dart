@@ -92,16 +92,37 @@ class HomeScreen extends StatelessWidget {
               if (state is PostsEmpty) {
                 return Center(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        'No Posts Currently Wanna Refresh',
+                        'No Posts Currently Wanna Refresh Or Add One?',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      FlatButton(
-                        onPressed: () {
-                          _postsCubit.getPosts(_userEntity.followingList);
-                        },
-                        child: Text('Retry'),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          FlatButton(
+                            onPressed: () {
+                              _postsCubit.getPosts(_userEntity.followingList);
+                            },
+                            child: Text('Retry'),
+                          ),
+                          FlatButton(
+                            onPressed: () {
+                              showModal(
+                                  configuration:
+                                      FadeScaleTransitionConfiguration(
+                                          transitionDuration:
+                                              Duration(milliseconds: 450),
+                                          reverseTransitionDuration:
+                                              Duration(milliseconds: 450)),
+                                  context: context,
+                                  builder: (context) =>
+                                      CreatePostScreen(_userEntity));
+                            },
+                            child: Text('Add'),
+                          ),
+                        ],
                       )
                     ],
                   ),

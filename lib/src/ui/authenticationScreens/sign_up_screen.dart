@@ -12,6 +12,7 @@ class SignUpScreen extends StatelessWidget {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,6 +56,9 @@ class SignUpScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                SizedBox(
+                  height: 16,
+                ),
                 ClipRRect(
                     borderRadius: BorderRadius.circular(16),
                     child: Image.asset(Res.intro_simgle)),
@@ -103,7 +107,7 @@ class SignUpScreen extends StatelessWidget {
                         MaterialPageRoute(
                             builder: (BuildContext context) => SignInScreen())),
                     child: Text(
-                      'SignUp',
+                      'SignIn',
                       style: TextStyle(color: Theme.of(context).accentColor),
                     ))
               ],

@@ -11,7 +11,6 @@ class ThemeUtils {
                   builders: <TargetPlatform, PageTransitionsBuilder>{
             TargetPlatform.android: SharedAxisPageTransitionsBuilder(
                 transitionType: SharedAxisTransitionType.vertical),
-            TargetPlatform.iOS: ZoomPageTransitionsBuilder()
           }));
 
   get darkMode => ThemeData(
@@ -21,7 +20,7 @@ class ThemeUtils {
           .copyWith(
               pageTransitionsTheme: PageTransitionsTheme(
                   builders: <TargetPlatform, PageTransitionsBuilder>{
-            TargetPlatform.android: ZoomPageTransitionsBuilder(),
-            TargetPlatform.iOS: ZoomPageTransitionsBuilder()
+            TargetPlatform.android: SharedAxisPageTransitionsBuilder(
+                transitionType: SharedAxisTransitionType.vertical),
           }));
 }

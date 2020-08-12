@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:amigos/src/model/postModel/PostEntity.dart';
+import 'package:amigos/src/model/postModel/by.dart';
+import 'package:amigos/src/model/postModel/comments.dart';
 import 'package:amigos/src/model/postModel/user.dart';
 import 'package:amigos/src/model/userModel/UserEntity.dart';
 import 'package:bloc/bloc.dart';
@@ -40,13 +42,14 @@ class PostsCubit extends Cubit<PostsState> {
           'id',
           DateTime.now().toString(),
           _imageUrl,
+          false,
           description,
           [],
           tags,
+          [],
           userEntity.id,
           User(userEntity.name, userEntity.isVerified, userEntity.profileUrl,
               userEntity.userName, userEntity.id),
-          false,
           []).toJson());
       emit(PostPosted());
     } catch (e) {
@@ -64,16 +67,16 @@ class PostsCubit extends Cubit<PostsState> {
           .orderBy('postedAt', descending: true)
           .snapshots()
           .listen((event) {
-            if (event.documents.isEmpty) {
-              emit(PostsEmpty());
-            } else {
-              _posts = [];
-              event.documents.forEach((element) {
-                _posts.add(PostEntity.fromDocument(element));
-                emit(PostsLoaded(_posts));
-              });
-            }
+        if (event.documents.isEmpty) {
+          emit(PostsEmpty());
+        } else {
+          _posts = [];
+          event.documents.forEach((element) {
+            _posts.add(PostEntity.fromDocument(element));
+            emit(PostsLoaded(_posts));
           });
+        }
+      });
     } catch (e) {
       emit(PostsError('Post Load Error'));
     }
@@ -123,5 +126,17 @@ class PostsCubit extends Cubit<PostsState> {
           .updateData({'likeList': likeList..add(id)});
     }
     return true;
+  }
+
+  addComment(PostEntity post, UserEntity userEntity, String text) {
+    post.comments
+      ..add(Comments(
+          By(userEntity.name, userEntity.isVerified, userEntity.profileUrl,
+              userEntity.userName, userEntity.id),
+          text,
+          [],
+          []));
+    _postFirestore.document(post.id).updateData(
+        {'comments': post.comments.map((v) => v.toJson()).toList()});
   }
 }

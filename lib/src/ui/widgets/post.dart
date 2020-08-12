@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:amigos/src/cubits/posts/posts_cubit.dart';
 import 'package:amigos/src/model/postModel/PostEntity.dart';
 import 'package:amigos/src/model/userModel/UserEntity.dart';
@@ -77,6 +79,7 @@ class Post extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.more_vert),
                 onPressed: () async {
+                  log(post.toJson().toString());
                   _bottomSheet(context);
                 },
               )
@@ -116,71 +119,84 @@ class Post extends StatelessWidget {
               else
                 Padding(
                   padding: const EdgeInsets.all(12),
-                  child: OpenContainer(
-                    transitionDuration: Duration(milliseconds: 450),
-                    closedBuilder:
-                        (BuildContext context, void Function() action) {
-                      return ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: GestureDetector(
-                            onDoubleTap: () => _postCubit.alterLike(
-                                post.likeList, _userEntity.id, post.id),
-                            child: CachedNetworkImage(
-                              cacheManager: _defaultCacheManager,
-                              imageUrl: post.imagePath,
-                              progressIndicatorBuilder: (_, __, ___) =>
-                                  CircularProgressIndicator(
-                                value: ___.downloaded.toDouble(),
-                              ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: OpenContainer(
+                      transitionDuration: Duration(milliseconds: 450),
+                      closedBuilder:
+                          (BuildContext context, void Function() action) {
+                        return GestureDetector(
+                          onDoubleTap: () => _postCubit.alterLike(
+                              post.likeList, _userEntity.id, post.id),
+                          child: CachedNetworkImage(
+                            cacheManager: _defaultCacheManager,
+                            imageUrl: post.imagePath,
+                            progressIndicatorBuilder: (_, __, ___) =>
+                                CircularProgressIndicator(
+                              value: ___.downloaded.toDouble(),
                             ),
-                          ));
-                    },
-                    openBuilder: (BuildContext context,
-                        void Function({Object returnValue}) action) {
-                      return SwipeDetector(
-                        onSwipeDown: () => Navigator.pop(context),
-                        child: PhotoView(
-                            loadingBuilder: (_, __) =>
-                                Center(child: CircularProgressIndicator()),
-                            imageProvider:
-                                CachedNetworkImageProvider(post.imagePath)),
-                      );
-                    },
+                          ),
+                        );
+                      },
+                      openBuilder: (BuildContext context,
+                          void Function({Object returnValue}) action) {
+                        return SwipeDetector(
+                          onSwipeDown: () => Navigator.pop(context),
+                          child: PhotoView(
+                              loadingBuilder: (_, __) =>
+                                  Center(child: CircularProgressIndicator()),
+                              imageProvider:
+                                  CachedNetworkImageProvider(post.imagePath)),
+                        );
+                      },
+                    ),
                   ),
                 )
             ],
           ),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              IconButton(
-                  visualDensity: VisualDensity.adaptivePlatformDensity,
-                  splashColor: Colors.pink,
-                  splashRadius: 400,
-                  icon: Icon(
-                    post.likeList.contains(_userEntity.id)
-                        ? Icons.favorite
-                        : Icons.favorite_border,
-                    color: post.likeList.contains(_userEntity.id)
-                        ? Colors.pink
-                        : Colors.grey,
-                  ),
-                  onPressed: () => _postCubit.alterLike(
-                      post.likeList, _userEntity.id, post.id)),
-              Text(
-                post.likeList.length == 0
-                    ? ''
-                    : post.likeList.length.toString(),
-                style: TextStyle(
-                    color: post.likeList.contains(_userEntity.id)
-                        ? Colors.pink
-                        : Colors.grey.shade600),
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Row(
+                  children: [
+                    IconButton(
+                        visualDensity: VisualDensity.adaptivePlatformDensity,
+                        splashColor: Colors.pink,
+                        splashRadius: 400,
+                        icon: Icon(
+                          post.likeList.contains(_userEntity.id)
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color: post.likeList.contains(_userEntity.id)
+                              ? Colors.pink
+                              : Colors.grey,
+                        ),
+                        onPressed: () => _postCubit.alterLike(
+                            post.likeList, _userEntity.id, post.id)),
+                    Text(
+                      post.likeList.length == 0
+                          ? 'Like it?'
+                          : post.likeList.length.toString(),
+                      style: TextStyle(
+                          color: post.likeList.contains(_userEntity.id)
+                              ? Colors.pink
+                              : Colors.grey.shade600),
+                    ),
+                  ],
+                ),
               ),
-              SizedBox(
-                width: 10,
-              ),
-              IconButton(icon: Icon(Icons.message), onPressed: () {}),
+              Expanded(
+                child: ExpansionTile(
+                  leading: Icon(Icons.message),
+                  title: Text(''),
+                  trailing: Text('3 Comments'),
+                  expandedCrossAxisAlignment: CrossAxisAlignment.start,
+                ),
+              )
             ],
-          )
+          ),
         ],
       ),
     );
@@ -261,7 +277,7 @@ class Post extends StatelessWidget {
                       onTap: () {
                         Navigator.of(context).pop();
                         Toast.show(
-                            '${post.user.name}\'s Post ${post.description} has been reported to the admins for Reviewing purpose. Check other Posts in meantime',
+                            '${post.user.name}\'s Post ${post.description} has been reported to the admins for Reviewing purpose. Check other Posts in meantime . Thanks for your contribution',
                             context,
                             duration: 3);
                         _postCubit.reportPost(post, _userEntity);

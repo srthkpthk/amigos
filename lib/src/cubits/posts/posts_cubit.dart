@@ -15,7 +15,6 @@ part 'posts_state.dart';
 class PostsCubit extends Cubit<PostsState> {
   PostsCubit() : super(PostsInitial());
   final _postFirestore = Firestore.instance.collection('Posts');
-  final _reportsFirestore = Firestore.instance.collection('Reports');
   final _firebaseStorage = FirebaseStorage.instance.ref();
 
   createPost(String description, File image, UserEntity userEntity,
@@ -38,16 +37,17 @@ class PostsCubit extends Cubit<PostsState> {
       }
 
       _postFirestore.add(PostEntity(
-              'id',
-              DateTime.now().toString(),
-              _imageUrl,
-              description,
-              [],
-              tags,
-              userEntity.id,
-              User(userEntity.name, userEntity.isVerified,
-                  userEntity.profileUrl, userEntity.userName, userEntity.id))
-          .toJson());
+          'id',
+          DateTime.now().toString(),
+          _imageUrl,
+          description,
+          [],
+          tags,
+          userEntity.id,
+          User(userEntity.name, userEntity.isVerified, userEntity.profileUrl,
+              userEntity.userName, userEntity.id),
+          false,
+          []).toJson());
       emit(PostPosted());
     } catch (e) {
       emit(PostsError('There was some error creating your post'));
@@ -59,20 +59,21 @@ class PostsCubit extends Cubit<PostsState> {
     try {
       emit(PostsLoading());
       _postFirestore
-//          .where('userId', whereIn: ['KrqGHRlD3wRWb0sumzKafwvd2hg2'])
+          .where('userId', whereIn: followingList)
+          .where('isFlagged', isEqualTo: false)
           .orderBy('postedAt', descending: true)
           .snapshots()
           .listen((event) {
-        if (event.documents.isEmpty) {
-          emit(PostsEmpty());
-        } else {
-          _posts = [];
-          event.documents.forEach((element) {
-            _posts.add(PostEntity.fromDocument(element));
-            emit(PostsLoaded(_posts));
+            if (event.documents.isEmpty) {
+              emit(PostsEmpty());
+            } else {
+              _posts = [];
+              event.documents.forEach((element) {
+                _posts.add(PostEntity.fromDocument(element));
+                emit(PostsLoaded(_posts));
+              });
+            }
           });
-        }
-      });
     } catch (e) {
       emit(PostsError('Post Load Error'));
     }
@@ -104,9 +105,11 @@ class PostsCubit extends Cubit<PostsState> {
     return base64Encode(_file.readAsBytesSync());
   }
 
-  reportPost(PostEntity post, UserEntity userEntity) async => _reportsFirestore
-      .document(post.id)
-      .setData({'post': post.toJson(), 'by': userEntity.toJson()});
+  reportPost(PostEntity post, UserEntity userEntity) {
+    _postFirestore
+        .document(post.id)
+        .updateData({'isFlagged': true, 'flaggedBy': userEntity.id});
+  }
 
   Future<bool> alterLike(
       List<String> likeList, String id, String postId) async {

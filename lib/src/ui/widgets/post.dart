@@ -202,7 +202,7 @@ class Post extends StatelessWidget {
                 child: ExpansionTile(
                   leading: Icon(Icons.message),
                   title: Text(''),
-                  trailing: Text('${post} Comments'),
+                  trailing: Text('${} Comments'),
                   expandedCrossAxisAlignment: CrossAxisAlignment.start,
                   childrenPadding: EdgeInsets.symmetric(horizontal: 10),
                   children: [

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:amigos/src/model/commentsModel/CommentEntity.dart';
+import 'package:amigos/src/model/commentsModel/comment_by.dart';
 import 'package:amigos/src/model/postModel/PostEntity.dart';
 import 'package:amigos/src/model/postModel/user.dart';
 import 'package:amigos/src/model/userModel/UserEntity.dart';
@@ -128,9 +129,17 @@ class PostsCubit extends Cubit<PostsState> {
   }
 
   addComment(PostEntity post, UserEntity userEntity, String text) {
-    _postFirestore
-        .document(post.id)
-        .collection('Comments')
-        .add(CommentEntity());
+    _postFirestore.document(post.id).collection('Comments').add(CommentEntity(
+            comment: text,
+            commentsLikeList: [],
+            commentImage: 'null',
+            commentBy: CommentBy(
+                name: userEntity.name,
+                isVerified: userEntity.isVerified,
+                profileUrl: userEntity.profileUrl,
+                userName: userEntity.userName,
+                userId: userEntity.id))
+        .toDocument());
   }
+  
 }

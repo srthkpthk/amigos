@@ -11,10 +11,10 @@ class CommentEntity {
 
   CommentEntity(
       {@required this.comment,
-      @required this.commentId,
       @required this.commentsLikeList,
       @required this.commentImage,
-      @required this.commentBy});
+      @required this.commentBy,
+      this.commentId});
 
   CommentEntity.fromDocument(DocumentSnapshot documentSnapshot)
       : comment = documentSnapshot.data["comment"],

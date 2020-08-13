@@ -9,20 +9,18 @@ part 'splash_state.dart';
 class SplashCubit extends Cubit<SplashState> {
   SplashCubit(this._sharedPreferencesHelper) : super(SplashInitial());
   final _sharedPreferencesHelper;
+
   checkIfUserIsRegistered() async {
-    if (await checkIfInternetIsThere()) {
-      String uid = await _sharedPreferencesHelper.getUid();
-      if (uid == null) {
-        emit(UnAuthenticatedUser());
-      } else {
-        emit(AuthenticatedUser(await Firestore.instance
-            .collection('Users')
-            .document(uid)
-            .get()
-            .then((value) => UserEntity.fromJsonMap(value.data))));
-      }
+    if (!await checkIfInternetIsThere()) emit(InternetNotAvailable());
+    String uid = await _sharedPreferencesHelper.getUid();
+    if (uid == null) {
+      emit(UnAuthenticatedUser());
     } else {
-      emit(InternetNotAvailable());
+      emit(AuthenticatedUser(await Firestore.instance
+          .collection('Users')
+          .document(uid)
+          .get()
+          .then((value) => UserEntity.fromJsonMap(value.data))));
     }
   }
 

@@ -1,9 +1,7 @@
 import 'package:amigos/res.dart';
-import 'package:amigos/src/cubits/authenticationScreen/authentication_cubit.dart';
 import 'package:amigos/src/cubits/splashScreen/splash_cubit.dart';
 import 'package:amigos/src/ui/authenticationScreens/sign_up_screen.dart';
 import 'package:amigos/src/ui/homeScreen/home_screen.dart';
-import 'package:amigos/src/ui/internetNotAvailableSection/internet_not_available_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,13 +32,11 @@ class SplashScreen extends StatelessWidget {
                             HomeScreen(state.userEntity))));
           }
           if (state is InternetNotAvailable) {
-            Future.delayed(
-                Duration(seconds: 2),
-                () => Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (BuildContext context) =>
-                            InternetNotAvailableScreen())));
+            Future.delayed(Duration(seconds: 2), () {
+              Scaffold.of(context).showSnackBar(SnackBar(
+                  content: Text('Please Check for any Internet Issues')));
+//              context.bloc<SplashCubit>().emit(UnAuthenticatedUser());
+            });
           }
         },
         child: Center(child: Image.asset(Res.splash)),

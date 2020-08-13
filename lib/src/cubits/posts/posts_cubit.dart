@@ -130,7 +130,8 @@ class PostsCubit extends Cubit<PostsState> {
   addComment(PostEntity post, UserEntity userEntity, String text) {
     post.comments
       ..add(Comments(
-          User(userEntity.name, false, 'profileUrl', 'userName', 'userId'),
+          User(userEntity.name, false, userEntity.profileUrl,
+              userEntity.userName, userEntity.id),
           text,
           [],
           post.comments.length + 1,

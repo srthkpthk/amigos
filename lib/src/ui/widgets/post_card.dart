@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:amigos/src/cubits/posts/posts_cubit.dart';
 import 'package:amigos/src/model/postModel/PostEntity.dart';
 import 'package:amigos/src/model/userModel/UserEntity.dart';
@@ -12,7 +10,6 @@ import 'package:flutter_share/flutter_share.dart';
 import 'package:flutter_share_me/flutter_share_me.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:swipedetector/swipedetector.dart';
 import 'package:timeago/timeago.dart' as timeAgo;
 import 'package:toast/toast.dart';
 
@@ -37,177 +34,254 @@ class Post extends StatelessWidget {
       elevation: 5,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       margin: EdgeInsets.all(5),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                PostDetailsScreen(post, _userEntity, _postCubit),
-          ),
-        ),
-        child: Column(
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: CachedNetworkImage(
-                          cacheManager: _defaultCacheManager,
-                          imageUrl: post.user.profileUrl,
-                          width: 40,
-                          height: 40,
-                        ),
-                      ),
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          children: [
-                            Container(
-                                width: MediaQuery.of(context).size.width < 400
-                                    ? 60
-                                    : null,
-                                padding: EdgeInsets.only(bottom: 5),
-                                child: Text('@${post.user.userName} • ',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16))),
-                            Text(
-                              timeAgo.format(DateTime.parse(post.postedAt),
-                                  allowFromNow: true, locale: 'en_short'),
-                              overflow: TextOverflow.fade,
-                              softWrap: true,
-                            )
-                          ],
-                        ),
-                        Text(post.user.name)
-                      ],
-                    ),
-                  ],
-                ),
-                IconButton(
-                  icon: Icon(Icons.more_vert),
-                  onPressed: () async {
-                    log(post.toDocument().toString());
-                    _bottomSheet(context);
-                  },
-                )
-              ],
-            ),
-            Divider(
-              indent: 20,
-              endIndent: 20,
-              color: Colors.grey,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Text(
-                    post.description,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-                  ),
-                ),
-                if (post.tags.isNotEmpty)
+      child: Column(
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.all(10),
-                    child: Wrap(
-                        spacing: 6,
-                        runSpacing: 5,
-                        children: post.tags.map((e) {
-                          return Chip(
-                              padding: EdgeInsets.all(8),
-                              backgroundColor: Theme.of(context).accentColor,
-                              labelStyle: TextStyle(color: Colors.white),
-                              label: Text('#$e'));
-                        }).toList()),
-                  ),
-                if (post.imagePath == null)
-                  Container()
-                else
-                  Padding(
-                    padding: const EdgeInsets.all(12),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
-                      child: OpenContainer(
-                        transitionDuration: Duration(milliseconds: 450),
-                        closedBuilder:
-                            (BuildContext context, void Function() action) {
-                          return GestureDetector(
-                            onDoubleTap: () => _postCubit.alterLike(
-                                post.likeList, _userEntity.id, post.id),
-                            child: CachedNetworkImage(
-                              cacheManager: _defaultCacheManager,
-                              imageUrl: post.imagePath,
-                              progressIndicatorBuilder: (_, __, ___) =>
-                                  CircularProgressIndicator(
-                                value: ___.downloaded.toDouble(),
-                              ),
-                            ),
-                          );
-                        },
-                        openBuilder: (BuildContext context,
-                            void Function({Object returnValue}) action) {
-                          return SwipeDetector(
-                            onSwipeDown: () => Navigator.pop(context),
-                            child: PhotoView(
-                                loadingBuilder: (_, __) =>
-                                    Center(child: CircularProgressIndicator()),
-                                imageProvider:
-                                    CachedNetworkImageProvider(post.imagePath)),
-                          );
-                        },
+                      child: CachedNetworkImage(
+                        cacheManager: _defaultCacheManager,
+                        imageUrl: post.user.profileUrl,
+                        width: 40,
+                        height: 40,
                       ),
                     ),
-                  )
-              ],
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                        children: [
+                          Container(
+                              width: MediaQuery.of(context).size.width < 400
+                                  ? 60
+                                  : null,
+                              padding: EdgeInsets.only(bottom: 5),
+                              child: Text('@${post.user.userName} • ',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16))),
+                          post.user.isVerified
+                              ? Padding(
+                                  padding: const EdgeInsets.all(4),
+                                  child: CircleAvatar(
+                                    foregroundColor: Colors.white,
+                                    backgroundColor: Colors.blue,
+                                    radius: 5,
+                                    child: Icon(
+                                      Icons.done,
+                                      size: 9,
+                                    ),
+                                  ))
+                              : Container(),
+                          //todo add verified badge icon
+                          Text(
+                            timeAgo.format(DateTime.parse(post.postedAt),
+                                allowFromNow: true, locale: 'en_short'),
+                            overflow: TextOverflow.fade,
+                            softWrap: true,
+                          )
+                        ],
+                      ),
+                      Text(post.user.name)
+                    ],
+                  ),
+                ],
+              ),
+              IconButton(
+                icon: Icon(Icons.more_vert),
+                onPressed: () async {
+//                  log(post.toDocument().toString());
+                  _bottomSheet(context);
+                },
+              )
+            ],
+          ),
+          Divider(
+            indent: 20,
+            endIndent: 20,
+            color: Colors.grey,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Text(
+                  post.description,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                ),
+              ),
+              if (post.tags.isNotEmpty)
                 Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Row(
-                    children: [
-                      IconButton(
-                          visualDensity: VisualDensity.adaptivePlatformDensity,
-                          splashColor: Colors.pink,
-                          splashRadius: 400,
-                          icon: Icon(
-                            post.likeList.contains(_userEntity.id)
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: post.likeList.contains(_userEntity.id)
-                                ? Colors.pink
-                                : Colors.grey,
+                  padding: const EdgeInsets.all(10),
+                  child: Wrap(
+                      spacing: 6,
+                      runSpacing: 5,
+                      children: post.tags.map((e) {
+                        return Chip(
+                            padding: EdgeInsets.all(8),
+                            backgroundColor: Theme.of(context).accentColor,
+                            labelStyle: TextStyle(color: Colors.white),
+                            label: Text('#$e'));
+                      }).toList()),
+                ),
+              if (post.imagePath == null)
+                Container()
+              else
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: OpenContainer(
+                      transitionDuration: Duration(milliseconds: 450),
+                      closedBuilder:
+                          (BuildContext context, void Function() action) {
+                        return GestureDetector(
+                          onDoubleTap: () => _postCubit.alterLike(
+                              post.likeList, _userEntity.id, post.id),
+                          child: CachedNetworkImage(
+                            cacheManager: _defaultCacheManager,
+                            imageUrl: post.imagePath,
+                            progressIndicatorBuilder: (_, __, ___) =>
+                                CircularProgressIndicator(),
                           ),
-                          onPressed: () => _postCubit.alterLike(
-                              post.likeList, _userEntity.id, post.id)),
-                      Text(
-                        post.likeList.length == 0
-                            ? 'Like it?'
-                            : post.likeList.length.toString(),
-                        style: TextStyle(
-                            color: post.likeList.contains(_userEntity.id)
-                                ? Colors.pink
-                                : Colors.grey.shade600),
+                        );
+                      },
+                      openBuilder: (BuildContext context,
+                          void Function({Object returnValue}) action) {
+                        return Scaffold(
+                          appBar: AppBar(
+                            backgroundColor: Colors.black,
+                            iconTheme: IconThemeData(color: Colors.white),
+                          ),
+                          body: PhotoView(
+                              loadingBuilder: (_, __) =>
+                                  Center(child: CircularProgressIndicator()),
+                              imageProvider:
+                                  CachedNetworkImageProvider(post.imagePath)),
+                        );
+                      },
+                    ),
+                  ),
+                )
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              IconButton(
+                  visualDensity: VisualDensity.adaptivePlatformDensity,
+                  splashColor: Colors.pink,
+                  splashRadius: 400,
+                  icon: Icon(
+                    post.likeList.contains(_userEntity.id)
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    color: post.likeList.contains(_userEntity.id)
+                        ? Colors.pink
+                        : Colors.grey,
+                  ),
+                  onPressed: () => _postCubit.alterLike(
+                      post.likeList, _userEntity.id, post.id)),
+              Text(
+                post.likeList.length == 0
+                    ? 'Love it?'
+                    : post.likeList.length.toString(),
+                style: TextStyle(
+                    color: post.likeList.contains(_userEntity.id)
+                        ? Colors.pink
+                        : Colors.grey.shade600),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              IconButton(
+                  icon: Icon(Icons.message),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PostDetailsScreen(
+                                post, _userEntity, _postCubit)));
+//                    _postCubit.addComment(post, _userEntity, 'hello');
+                  }),
+              Text(
+                post.comments.length == 0
+                    ? 'Comment'
+                    : post.comments.length == 1
+                        ? '${post.comments.length.toString()} Comment'
+                        : '${post.comments.length.toString()} Comments',
+                style: TextStyle(color: Colors.grey.shade600),
+              )
+            ],
+          ),
+          post.comments.isNotEmpty
+              ? InkWell(
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PostDetailsScreen(
+                              post, _userEntity, _postCubit))),
+                  child: Column(
+                    children: [
+                      Divider(
+                        thickness: 1,
+                        height: 1,
+                        indent: 20,
+                        endIndent: 20,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: CachedNetworkImage(
+                                  cacheManager: _defaultCacheManager,
+                                  height: 30,
+                                  width: 30,
+                                  imageUrl: post
+                                      .comments[post.comments.length - 1]
+                                      .by
+                                      .profileUrl),
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                                color: Colors.grey.shade300,
+                                borderRadius: BorderRadius.circular(16)),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  post.comments[post.comments.length - 1].by
+                                      .name,
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                Text(post
+                                    .comments[post.comments.length - 1].comment)
+                              ],
+                            ),
+                          )
+                        ],
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-          ],
-        ),
+                )
+              : Container()
+        ],
       ),
     );
   }
@@ -270,7 +344,7 @@ class Post extends StatelessWidget {
                   Navigator.of(context).pop();
                   FlutterShareMe().shareToWhatsApp(
                       msg:
-                          'Hey! Check What *${post.user.name}* Shared on Amigos. (  *${post.description}*  ) ',
+                          'Hey! Check What *${post.user.name}* Shared on Amigos. (  *${post.description.trimRight()}*  ) ',
                       base64Image: post.imagePath == null
                           ? null
                           : 'data:image/jpeg;base64,${await _postCubit.getBase64Image(_defaultCacheManager.getSingleFile(post.imagePath))}');

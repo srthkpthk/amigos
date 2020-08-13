@@ -1,3 +1,4 @@
+import 'package:amigos/src/model/postModel/comments.dart';
 import 'package:amigos/src/model/postModel/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -12,9 +13,9 @@ class PostEntity {
   final List<String> flaggedBy;
   final String userId;
   final User user;
+  final List<Comments> comments;
 
   PostEntity(
-      this.id,
       this.postedAt,
       this.imagePath,
       this.flags,
@@ -23,7 +24,9 @@ class PostEntity {
       this.tags,
       this.flaggedBy,
       this.userId,
-      this.user);
+      this.user,
+      this.comments,
+      {this.id});
 
   PostEntity.fromDocument(DocumentSnapshot documentSnapshot)
       : id = documentSnapshot.documentID,
@@ -35,19 +38,23 @@ class PostEntity {
         tags = List<String>.from(documentSnapshot.data["tags"]),
         flaggedBy = List<String>.from(documentSnapshot.data["flaggedBy"]),
         userId = documentSnapshot.data["userId"],
-        user = User.fromJsonMap(documentSnapshot.data["user"]);
+        user = User.fromJsonMap(documentSnapshot.data["user"]),
+        comments = List<Comments>.from(documentSnapshot.data["comments"]
+            .map((it) => Comments.fromJsonMap(it)));
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['postedAt'] = postedAt;
-    data['imagePath'] = imagePath;
-    data['flaggedBy'] = flaggedBy;
-    data['description'] = description;
-    data['likeList'] = likeList;
-    data['tags'] = tags;
-    data['flags'] = flags;
-    data['userId'] = userId;
-    data['user'] = user == null ? null : user.toJson();
-    return data;
+  Map<String, dynamic> toDocument() {
+    final Map<String, dynamic> map = Map<String, dynamic>();
+    map['postedAt'] = postedAt;
+    map['imagePath'] = imagePath;
+    map['flags'] = flags;
+    map['description'] = description;
+    map['likeList'] = likeList;
+    map['tags'] = tags;
+    map['flaggedBy'] = flaggedBy;
+    map['userId'] = userId;
+    map['user'] = user == null ? null : user.toJson();
+    map['comments'] =
+        comments != null ? this.comments.map((v) => v.toJson()).toList() : null;
+    return map;
   }
 }

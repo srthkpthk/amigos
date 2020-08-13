@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:amigos/src/model/commentsModel/CommentEntity.dart';
-import 'package:amigos/src/model/commentsModel/comment_by.dart';
 import 'package:amigos/src/model/postModel/PostEntity.dart';
+import 'package:amigos/src/model/postModel/comments.dart';
 import 'package:amigos/src/model/postModel/user.dart';
 import 'package:amigos/src/model/userModel/UserEntity.dart';
 import 'package:bloc/bloc.dart';
@@ -39,18 +38,17 @@ class PostsCubit extends Cubit<PostsState> {
       }
 
       _postFirestore.add(PostEntity(
-        'id',
-        DateTime.now().toString(),
-        _imageUrl,
-        0,
-        description,
-        [],
-        tags,
-        [],
-        userEntity.id,
-        User(userEntity.name, userEntity.isVerified, userEntity.profileUrl,
-            userEntity.userName, userEntity.id),
-      ).toJson());
+          DateTime.now().toString(),
+          _imageUrl,
+          0,
+          description,
+          [],
+          tags,
+          [],
+          userEntity.id,
+          User(userEntity.name, userEntity.isVerified, userEntity.profileUrl,
+              userEntity.userName, userEntity.id),
+          []).toDocument());
       emit(PostPosted());
     } catch (e) {
       emit(PostsError('There was some error creating your post'));
@@ -129,17 +127,14 @@ class PostsCubit extends Cubit<PostsState> {
   }
 
   addComment(PostEntity post, UserEntity userEntity, String text) {
-    _postFirestore.document(post.id).collection('Comments').add(CommentEntity(
-            comment: text,
-            commentsLikeList: [],
-            commentImage: 'null',
-            commentBy: CommentBy(
-                name: userEntity.name,
-                isVerified: userEntity.isVerified,
-                profileUrl: userEntity.profileUrl,
-                userName: userEntity.userName,
-                userId: userEntity.id))
-        .toDocument());
+    post.comments
+      ..add(Comments(
+          User(userEntity.name, false, 'profileUrl', 'userName', 'userId'),
+          text,
+          [],
+          post.comments.length + 1,
+          []));
+    _postFirestore.document(post.id).updateData(
+        {'comments': post.comments.map((e) => e.toJson()).toList()});
   }
-  
 }

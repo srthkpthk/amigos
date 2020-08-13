@@ -90,7 +90,7 @@ class Post extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.more_vert),
                 onPressed: () async {
-                  log(post.toJson().toString());
+                  log(post.toDocument().toString());
                   _bottomSheet(context);
                 },
               )
@@ -202,7 +202,7 @@ class Post extends StatelessWidget {
                 child: ExpansionTile(
                   leading: Icon(Icons.message),
                   title: Text(''),
-                  trailing: Text('${} Comments'),
+                  trailing: Text('${post.comments.length} Comments'),
                   expandedCrossAxisAlignment: CrossAxisAlignment.start,
                   childrenPadding: EdgeInsets.symmetric(horizontal: 10),
                   children: [
@@ -218,8 +218,11 @@ class Post extends StatelessWidget {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(6)),
                               color: Theme.of(context).accentColor,
-                              onPressed: () => _postCubit.addComment(post,
-                                  _userEntity, _commentAddController.text),
+                              onPressed: () {
+                                _postCubit.addComment(post, _userEntity,
+                                    _commentAddController.text);
+                                _commentAddController.clear();
+                              },
                               child: Text('Add')),
                         )
                       ],

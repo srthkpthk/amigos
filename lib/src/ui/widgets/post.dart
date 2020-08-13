@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:amigos/src/cubits/posts/posts_cubit.dart';
 import 'package:amigos/src/model/postModel/PostEntity.dart';
 import 'package:amigos/src/model/userModel/UserEntity.dart';
-import 'package:amigos/src/ui/widgets/entry_filed.dart';
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +20,6 @@ class Post extends StatelessWidget {
   final UserEntity _userEntity;
   final _postCubit = PostsCubit();
   final _defaultCacheManager = DefaultCacheManager();
-  final _commentAddController = TextEditingController();
 
   Post(this.post, this._userEntity);
 
@@ -198,46 +196,6 @@ class Post extends StatelessWidget {
                   ],
                 ),
               ),
-              Expanded(
-                child: ExpansionTile(
-                  leading: Icon(Icons.message),
-                  title: Text(''),
-                  trailing: Text('${post.comments.length} Comments'),
-                  expandedCrossAxisAlignment: CrossAxisAlignment.start,
-                  childrenPadding: EdgeInsets.symmetric(horizontal: 10),
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: EntryField.generate(
-                              'Add Comment', _commentAddController, true),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: FlatButton(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(6)),
-                              color: Theme.of(context).accentColor,
-                              onPressed: () {
-                                _postCubit.addComment(post, _userEntity,
-                                    _commentAddController.text);
-                                _commentAddController.clear();
-                              },
-                              child: Text('Add')),
-                        )
-                      ],
-                    ),
-//                    Expanded(
-//                      child: ListView.builder(
-//                        itemCount: post.comments.length,
-//                        itemBuilder: (context, index) {
-//                          return Expanded(child: Text(post.comments[index].comment));
-//                        },
-//                      ),
-//                    )
-                  ],
-                ),
-              )
             ],
           ),
         ],

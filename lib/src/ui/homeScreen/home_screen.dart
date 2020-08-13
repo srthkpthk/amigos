@@ -1,7 +1,7 @@
 import 'package:amigos/src/cubits/posts/posts_cubit.dart';
 import 'package:amigos/src/model/userModel/UserEntity.dart';
 import 'package:amigos/src/ui/homeScreen/create_post_screen.dart';
-import 'package:amigos/src/ui/widgets/post.dart';
+import 'package:amigos/src/ui/widgets/post_card.dart';
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';

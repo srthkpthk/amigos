@@ -39,7 +39,6 @@ class PostEntity {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = id;
     data['postedAt'] = postedAt;
     data['imagePath'] = imagePath;
     data['flaggedBy'] = flaggedBy;

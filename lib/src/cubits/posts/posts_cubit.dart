@@ -62,7 +62,7 @@ class PostsCubit extends Cubit<PostsState> {
       _postFirestore
 //          .orderBy('flags')
           .orderBy('postedAt', descending: true)
-          .where('userId', whereIn: followingList)
+//          .where('userId', whereIn: followingList)
 //          .where('flags', isLessThanOrEqualTo: 4)
           .snapshots()
           .listen((event) {
@@ -108,13 +108,14 @@ class PostsCubit extends Cubit<PostsState> {
   }
 
   reportPost(PostEntity post, UserEntity userEntity) {
+    post.flaggedBy..add(userEntity.id);
     _postFirestore
         .document(post.id)
-        .updateData({'isFlagged': true, 'flaggedBy': userEntity.id});
+        .updateData({'flags': post.flags + 1, 'flaggedBy': post.flaggedBy});
   }
 
-  Future<bool> alterLike(
-      List<String> likeList, String id, String postId) async {
+  Future<bool> alterLike(List<String> likeList, String id,
+      String postId) async {
     if (likeList.contains(id)) {
       await _postFirestore
           .document(postId)

@@ -98,7 +98,8 @@ class Post extends StatelessWidget {
                 ],
               ),
               IconButton(
-                icon: Icon(Icons.more_vert),
+                icon:
+                    post.flags == 0 ? Icon(Icons.more_vert) : Icon(Icons.info),
                 onPressed: () async {
 //                  log(post.toDocument().toString());
                   _bottomSheet(context);
@@ -173,7 +174,7 @@ class Post extends StatelessWidget {
                       },
                     ),
                   ),
-                )
+                ),
             ],
           ),
           Row(
@@ -303,6 +304,45 @@ class Post extends StatelessWidget {
           child: Wrap(
             runSpacing: 5,
             children: [
+              post.flags != 0 && _userEntity.id != post.user.userId && !post.flaggedBy.contains(_userEntity.id)
+                  ? Column(
+                      children: [
+                        ListTile(
+                          leading: Icon(Icons.info),
+                          title: Text('About this Post'),
+                          subtitle: Text(
+                              'This Post has been reported by ${post.flags} users for inappropriate content.\n If you find it true please report it '),
+                        ),
+                        Divider()
+                      ],
+                    )
+                  : Container(),
+              post.flags != 0 && _userEntity.id == post.user.userId
+                  ? Column(
+                      children: [
+                        ListTile(
+                          leading: Icon(Icons.info),
+                          title: Text('About this Post'),
+                          subtitle: Text(
+                              'Your Post has been reported by ${post.flags} users for inappropriate content'),
+                        ),
+                        Divider()
+                      ],
+                    )
+                  : Container(),
+              post.flags != 0 && _userEntity.id != post.user.userId && post.flaggedBy.contains(_userEntity.id)
+                  ? Column(
+                      children: [
+                        ListTile(
+                          leading: Icon(Icons.info),
+                          title: Text('About this Post'),
+                          subtitle: Text(
+                              'You have reported this post for inappropriate content \n The post is under review \n So far ${post.flags} users have reported this post as inappropriate'),
+                        ),
+                        Divider()
+                      ],
+                    )
+                  : Container(),
               _userEntity.id == post.user.userId
                   ? ListTile(
                       title: Text(
@@ -358,7 +398,8 @@ class Post extends StatelessWidget {
                           : 'data:image/jpeg;base64,${await _postCubit.getBase64Image(_defaultCacheManager.getSingleFile(post.imagePath))}');
                 },
               ),
-              _userEntity.id != post.user.userId
+              _userEntity.id != post.user.userId &&
+                      !post.flaggedBy.contains(_userEntity.id)
                   ? ListTile(
                       title: Text(
                         'Report',

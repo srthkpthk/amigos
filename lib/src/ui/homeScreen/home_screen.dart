@@ -6,6 +6,7 @@ import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:toast/toast.dart';
 
 import '../../../res.dart';
 
@@ -26,11 +27,14 @@ class HomeScreen extends StatelessWidget {
         elevation: 1,
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: BlocBuilder(
-            cubit: _postsCubit,
-            builder: (BuildContext context, state) => state is PostsLoading
-                ? Image.asset(Res.small_logo_loading)
-                : Image.asset(Res.small_logo),
+          child: GestureDetector(
+            onTap: () => Toast.show('What\'s up Amigo', context),
+            child: BlocBuilder(
+              cubit: _postsCubit,
+              builder: (BuildContext context, state) => state is PostsLoading
+                  ? Image.asset(Res.small_logo_loading)
+                  : Image.asset(Res.small_logo),
+            ),
           ),
         ),
       ),
@@ -56,7 +60,8 @@ class HomeScreen extends StatelessWidget {
                 Column(
                   children: <Widget>[
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4,vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 4, vertical: 10),
                       child: FloatingActionButton(
                         child: Icon(Icons.add),
                         elevation: 60,
@@ -150,7 +155,7 @@ class HomeScreen extends StatelessWidget {
                 return ListView.builder(
                   itemCount: state.posts.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return Post(state.posts[index], _userEntity);
+                    return Post(state.posts[index], _userEntity,PostModes.HomeScreen);
                   },
                 );
               } else {

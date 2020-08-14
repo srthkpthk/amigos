@@ -13,13 +13,16 @@ import 'package:photo_view/photo_view.dart';
 import 'package:timeago/timeago.dart' as timeAgo;
 import 'package:toast/toast.dart';
 
+enum PostModes { HomeScreen, DetailScreen }
+
 class Post extends StatelessWidget {
   final PostEntity post;
   final UserEntity _userEntity;
   final _postCubit = PostsCubit();
   final _defaultCacheManager = DefaultCacheManager();
+  final mode;
 
-  Post(this.post, this._userEntity);
+  Post(this.post, this._userEntity, this.mode);
 
   @override
   Widget build(BuildContext context) {
@@ -117,9 +120,16 @@ class Post extends StatelessWidget {
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(10),
-                child: Text(
-                  post.description,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                child: Hero(
+                  tag: post.id,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Text(
+                      post.description,
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                    ),
+                  ),
                 ),
               ),
               if (post.tags.isNotEmpty)
@@ -150,11 +160,14 @@ class Post extends StatelessWidget {
                         return GestureDetector(
                           onDoubleTap: () => _postCubit.alterLike(
                               post.likeList, _userEntity.id, post.id),
-                          child: CachedNetworkImage(
-                            cacheManager: _defaultCacheManager,
-                            imageUrl: post.imagePath,
-                            progressIndicatorBuilder: (_, __, ___) =>
-                                CircularProgressIndicator(),
+                          child: Hero(
+                            tag: post.imagePath,
+                            child: CachedNetworkImage(
+                              cacheManager: _defaultCacheManager,
+                              imageUrl: post.imagePath,
+                              progressIndicatorBuilder: (_, __, ___) =>
+                                  CircularProgressIndicator(),
+                            ),
                           ),
                         );
                       },
@@ -208,12 +221,14 @@ class Post extends StatelessWidget {
               IconButton(
                   icon: Icon(Icons.message),
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => PostDetailsScreen(
-                                post, _userEntity, _postCubit)));
-//                    _postCubit.addComment(post, _userEntity, 'hello');
+                    if (mode == PostModes.HomeScreen) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => PostDetailsScreen(
+                                  post, _userEntity, _postCubit)));
+                    }
+                    _postCubit.addComment(post, _userEntity, 'hello');
                   }),
               Text(
                 post.comments.length == 0
@@ -225,7 +240,7 @@ class Post extends StatelessWidget {
               )
             ],
           ),
-          post.comments.isNotEmpty
+          post.comments.isNotEmpty && mode == PostModes.HomeScreen
               ? InkWell(
                   onTap: () => Navigator.push(
                       context,
@@ -304,7 +319,9 @@ class Post extends StatelessWidget {
           child: Wrap(
             runSpacing: 5,
             children: [
-              post.flags != 0 && _userEntity.id != post.user.userId && !post.flaggedBy.contains(_userEntity.id)
+              post.flags != 0 &&
+                      _userEntity.id != post.user.userId &&
+                      !post.flaggedBy.contains(_userEntity.id)
                   ? Column(
                       children: [
                         ListTile(
@@ -330,7 +347,9 @@ class Post extends StatelessWidget {
                       ],
                     )
                   : Container(),
-              post.flags != 0 && _userEntity.id != post.user.userId && post.flaggedBy.contains(_userEntity.id)
+              post.flags != 0 &&
+                      _userEntity.id != post.user.userId &&
+                      post.flaggedBy.contains(_userEntity.id)
                   ? Column(
                       children: [
                         ListTile(

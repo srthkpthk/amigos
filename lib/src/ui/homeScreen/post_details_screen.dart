@@ -1,6 +1,7 @@
 import 'package:amigos/src/cubits/posts/posts_cubit.dart';
 import 'package:amigos/src/model/postModel/PostEntity.dart';
 import 'package:amigos/src/model/userModel/UserEntity.dart';
+import 'package:amigos/src/ui/widgets/post_card.dart';
 import 'package:flutter/material.dart';
 
 class PostDetailsScreen extends StatelessWidget {
@@ -13,11 +14,13 @@ class PostDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Container(
-          child: Text(postEntity.description),
+      appBar: AppBar(
+        title: Text(
+          '${postEntity.user.name}\'s Post',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
         ),
       ),
+      body: Post(postEntity, userEntity, PostModes.DetailScreen),
     );
   }
 }

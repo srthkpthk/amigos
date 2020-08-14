@@ -155,7 +155,7 @@ class HomeScreen extends StatelessWidget {
                 return ListView.builder(
                   itemCount: state.posts.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return Post(state.posts[index], _userEntity,PostModes.HomeScreen);
+                    return Post(state.posts[index], _userEntity);
                   },
                 );
               } else {

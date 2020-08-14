@@ -4,5 +4,4 @@ class Res {
   static const String small_logo = "assets/images/small_logo.png";
   static const String small_logo_loading = "assets/images/small_logo_loading.gif";
   static const String splash = "assets/images/splash.gif";
-  static const String verified_badge = "assets/images/verified_badge.png";
 }

@@ -74,7 +74,8 @@ class Post extends StatelessWidget {
                                   padding: const EdgeInsets.all(4),
                                   child: CircleAvatar(
                                     foregroundColor: Colors.white,
-                                    backgroundColor: Colors.blue,
+                                    backgroundColor:
+                                        Theme.of(context).accentColor,
                                     radius: 5,
                                     child: Icon(
                                       Icons.done,
@@ -238,44 +239,51 @@ class Post extends StatelessWidget {
                         indent: 20,
                         endIndent: 20,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: CachedNetworkImage(
-                                  cacheManager: _defaultCacheManager,
-                                  height: 30,
-                                  width: 30,
-                                  imageUrl: post
-                                      .comments[post.comments.length - 1]
-                                      .by
-                                      .profileUrl),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: CachedNetworkImage(
+                                    cacheManager: _defaultCacheManager,
+                                    height: 30,
+                                    width: 30,
+                                    imageUrl: post
+                                        .comments[post.comments.length - 1]
+                                        .by
+                                        .profileUrl),
+                              ),
                             ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                                color: Colors.grey.shade300,
-                                borderRadius: BorderRadius.circular(16)),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  post.comments[post.comments.length - 1].by
-                                      .name,
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                Text(post
-                                    .comments[post.comments.length - 1].comment)
-                              ],
-                            ),
-                          )
-                        ],
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 6),
+                              decoration: BoxDecoration(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Colors.grey.shade300
+                                      : Colors.grey.shade700,
+                                  borderRadius: BorderRadius.circular(16)),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    post.comments[post.comments.length - 1].by
+                                        .name,
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(post.comments[post.comments.length - 1]
+                                      .comment)
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ],
                   ),

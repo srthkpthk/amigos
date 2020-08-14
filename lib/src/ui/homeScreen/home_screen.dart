@@ -37,7 +37,7 @@ class HomeScreen extends StatelessWidget {
       body: Row(
         children: <Widget>[
           Container(
-            width: 70,
+            width: 60,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -56,7 +56,7 @@ class HomeScreen extends StatelessWidget {
                 Column(
                   children: <Widget>[
                     Padding(
-                      padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.symmetric(horizontal: 4,vertical: 10),
                       child: FloatingActionButton(
                         child: Icon(Icons.add),
                         elevation: 60,

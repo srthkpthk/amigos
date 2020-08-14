@@ -60,10 +60,10 @@ class PostsCubit extends Cubit<PostsState> {
     try {
       emit(PostsLoading());
       _postFirestore
-          .orderBy('flags')
+//          .orderBy('flags')
           .orderBy('postedAt', descending: true)
           .where('userId', whereIn: followingList)
-          .where('flags', isLessThanOrEqualTo: 4)
+//          .where('flags', isLessThanOrEqualTo: 4)
           .snapshots()
           .listen((event) {
         if (event.documents.isEmpty) {

@@ -29,17 +29,17 @@ class PostEntity {
       {this.id});
 
   PostEntity.fromDocument(DocumentSnapshot documentSnapshot)
-      : id = documentSnapshot.documentID,
-        postedAt = documentSnapshot.data["postedAt"],
-        imagePath = documentSnapshot.data["imagePath"],
-        flags = documentSnapshot.data["flags"],
-        description = documentSnapshot.data["description"],
-        likeList = List<String>.from(documentSnapshot.data["likeList"]),
-        tags = List<String>.from(documentSnapshot.data["tags"]),
-        flaggedBy = List<String>.from(documentSnapshot.data["flaggedBy"]),
-        userId = documentSnapshot.data["userId"],
-        user = User.fromJsonMap(documentSnapshot.data["user"]),
-        comments = List<Comments>.from(documentSnapshot.data["comments"]
+      : id = documentSnapshot.id,
+        postedAt = documentSnapshot.data()["postedAt"],
+        imagePath = documentSnapshot.data()["imagePath"],
+        flags = documentSnapshot.data()["flags"],
+        description = documentSnapshot.data()["description"],
+        likeList = List<String>.from(documentSnapshot.data()["likeList"]),
+        tags = List<String>.from(documentSnapshot.data()["tags"]),
+        flaggedBy = List<String>.from(documentSnapshot.data()["flaggedBy"]),
+        userId = documentSnapshot.data()["userId"],
+        user = User.fromJsonMap(documentSnapshot.data()["user"]),
+        comments = List<Comments>.from(documentSnapshot.data()["comments"]
             .map((it) => Comments.fromJsonMap(it)));
 
   Map<String, dynamic> toDocument() {

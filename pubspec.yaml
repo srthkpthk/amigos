@@ -8,30 +8,31 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_bloc: ^6.0.1
-  firebase_auth: ^0.16.1
-  cloud_firestore: ^0.13.7
-  google_sign_in: ^4.5.1
-  connectivity: ^0.4.9
-  firebase_messaging: ^6.0.16
-  firebase_storage: ^3.1.6
+  flutter_bloc: ^6.1.1
+  firebase_auth: ^0.18.4
+  firebase_core: ^0.5.3
+  cloud_firestore: ^0.14.4
+  google_sign_in: ^4.5.6
+  connectivity: ^2.0.2
+  firebase_messaging: ^7.0.3
+  firebase_storage: ^5.2.0
   animations: ^1.1.2
-  image_picker: ^0.6.7+4
-  device_preview: ^0.4.7
-  shared_preferences: ^0.5.8
-  cached_network_image: ^2.2.0+1
+  image_picker: ^0.6.7+14
+  device_preview: ^0.5.5
+  shared_preferences: ^0.5.12+4
+  cached_network_image: ^2.4.1
   toast: ^0.1.5
-  flutter_chip_tags: ^1.0.3
+  flutter_chip_tags: ^1.0.4
   random_color: ^1.0.5
   swipedetector: ^1.2.0
-  photo_view: ^0.9.2
-  timeago: ^2.0.26
-  flutter_share: ^1.0.2+1
-  firebase_dynamic_links: ^0.5.3
-  firebase_analytics: ^5.0.16
-  flutter_share_me: ^0.9.1
-  font_awesome_flutter: ^8.8.1
-  flutter_cache_manager: ^1.4.1
+  photo_view: ^0.10.3
+  timeago: ^2.0.29
+  flutter_share: ^1.0.5
+  firebase_dynamic_links: ^0.6.3
+  firebase_analytics: ^6.3.0
+  flutter_share_me: ^0.9.2
+  font_awesome_flutter: ^8.10.0
+  flutter_cache_manager: ^2.0.0
 flutter:
   uses-material-design: true
   assets:

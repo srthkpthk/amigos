@@ -20,7 +20,7 @@ class SplashCubit extends Cubit<SplashState> {
           .collection('Users')
           .document(uid)
           .get()
-          .then((value) => UserEntity.fromJsonMap(value.data))));
+          .then((value) => UserEntity.fromJsonMap(value.data()))));
     }
   }
 

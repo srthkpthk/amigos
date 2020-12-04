@@ -8,18 +8,18 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:798101090840:android:a4da42c585c94594ce496d",
+        "mobilesdk_app_id": "1:798101090840:android:813a3226aa7a33d3ce496d",
         "android_client_info": {
           "package_name": "srthk.pthk.amigos"
         }
       },
       "oauth_client": [
         {
-          "client_id": "798101090840-ipc13713vnoaat7nh5d4old6h88bauv3.apps.googleusercontent.com",
+          "client_id": "798101090840-6l4sulg9f7q085pgrvn3tnaa54enpues.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "srthk.pthk.amigos",
-            "certificate_hash": "5c298afb2ce3c2613b979b5ea170589749c3e1b9"
+            "certificate_hash": "78128ec7846652f0ea02dc8e7c887bea63524ff1"
           }
         },
         {

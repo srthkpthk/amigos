@@ -15,7 +15,7 @@ part 'posts_state.dart';
 
 class PostsCubit extends Cubit<PostsState> {
   PostsCubit() : super(PostsInitial());
-  final _postFirestore = Firestore.instance.collection('Posts');
+  final _postFirestore = FirebaseFirestore.instance.collection('Posts');
   final _firebaseStorage = FirebaseStorage.instance.ref();
 
   createPost(String description, File image, UserEntity userEntity,
@@ -28,10 +28,9 @@ class PostsCubit extends Cubit<PostsState> {
       emit(PostsLoading());
       String _imageUrl;
       if (image != null) {
-        StorageUploadTask _ut = _firebaseStorage
+        UploadTask _ut = _firebaseStorage
             .child('Posts/Users/${userEntity.id}/${image.path}')
             .putFile(image);
-        await _ut.onComplete;
         _imageUrl = await _firebaseStorage
             .child('Posts/Users/${userEntity.id}/${image.path}')
             .getDownloadURL();
@@ -66,11 +65,11 @@ class PostsCubit extends Cubit<PostsState> {
 //          .where('flags', isLessThanOrEqualTo: 4)
           .snapshots()
           .listen((event) {
-        if (event.documents.isEmpty) {
+        if (event.docs.isEmpty) {
           emit(PostsEmpty());
         } else {
           _posts = [];
-          event.documents.forEach((element) {
+          event.docs.forEach((element) {
             _posts.add(PostEntity.fromDocument(element));
             emit(PostsLoaded(_posts));
           });
@@ -81,7 +80,7 @@ class PostsCubit extends Cubit<PostsState> {
     }
   }
 
-  deletePost(String id) => _postFirestore.document(id).delete();
+  deletePost(String id) => _postFirestore.doc(id).delete();
 
   getDynamicLink(String id) async {
     var parameters = await DynamicLinkParameters(
@@ -110,20 +109,18 @@ class PostsCubit extends Cubit<PostsState> {
   reportPost(PostEntity post, UserEntity userEntity) {
     post.flaggedBy..add(userEntity.id);
     _postFirestore
-        .document(post.id)
-        .updateData({'flags': post.flags + 1, 'flaggedBy': post.flaggedBy});
+        .doc(post.id)
+        .update({'flags': post.flags + 1, 'flaggedBy': post.flaggedBy});
   }
 
-  Future<bool> alterLike(List<String> likeList, String id,
-      String postId) async {
+  Future<bool> alterLike(
+      List<String> likeList, String id, String postId) async {
     if (likeList.contains(id)) {
       await _postFirestore
-          .document(postId)
-          .updateData({'likeList': likeList..remove(id)});
+          .doc(postId)
+          .update({'likeList': likeList..remove(id)});
     } else {
-      await _postFirestore
-          .document(postId)
-          .updateData({'likeList': likeList..add(id)});
+      await _postFirestore.doc(postId).update({'likeList': likeList..add(id)});
     }
     return true;
   }
@@ -137,7 +134,8 @@ class PostsCubit extends Cubit<PostsState> {
           [],
           post.comments.length + 1,
           []));
-    _postFirestore.document(post.id).updateData(
-        {'comments': post.comments.map((e) => e.toJson()).toList()});
+    _postFirestore
+        .doc(post.id)
+        .update({'comments': post.comments.map((e) => e.toJson()).toList()});
   }
 }

@@ -17,12 +17,12 @@ class CommentEntity {
       this.commentId});
 
   CommentEntity.fromDocument(DocumentSnapshot documentSnapshot)
-      : comment = documentSnapshot.data["comment"],
-        commentId = documentSnapshot.data["commentId"],
+      : comment = documentSnapshot.data()["comment"],
+        commentId = documentSnapshot.data()["commentId"],
         commentsLikeList =
-            List<String>.from(documentSnapshot.data["commentsLikeList"]),
-        commentImage = documentSnapshot.data["commentImage"],
-        commentBy = CommentBy.fromJsonMap(documentSnapshot.data["commentBy"]);
+            List<String>.from(documentSnapshot.data()["commentsLikeList"]),
+        commentImage = documentSnapshot.data()["commentImage"],
+        commentBy = CommentBy.fromJsonMap(documentSnapshot.data()["commentBy"]);
 
   Map<String, dynamic> toDocument() {
     final Map<String, dynamic> map = Map<String, dynamic>();

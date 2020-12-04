@@ -18,7 +18,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final _sharedPreferencesHelper = SharedPreferencesHelper();
   final CollectionReference _collectionReference =
-      Firestore.instance.collection('Users');
+      FirebaseFirestore.instance.collection('Users');
 
   googleSignIn() async {
     try {
@@ -27,23 +27,23 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
-      final AuthCredential credential = GoogleAuthProvider.getCredential(
+      final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      final FirebaseUser user =
+      final User user =
           (await _auth.signInWithCredential(credential)).user;
       _sharedPreferencesHelper.saveUid(user.uid);
 
       if (await _collectionReference
-          .document(user.uid)
+          .doc(user.uid)
           .get()
           .then((value) => value.exists)) {
         emit(AuthenticationSuccessful(UserEntity.fromJsonMap(
             await _collectionReference
-                .document(user.uid)
+                .doc(user.uid)
                 .get()
-                .then((value) => value.data))));
+                .then((value) => value.data()))));
       } else {
         final _user = UserEntity(
             'New User',
@@ -59,9 +59,9 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
             DateTime.now().toString(),
             'Earth',
             user.displayName,
-            user.photoUrl,
+            user.photoURL,
             '${user.displayName.replaceAll(' ', '').toLowerCase()}${Random().nextInt(100)}');
-        _collectionReference.document(user.uid).setData(_user.toJson());
+        _collectionReference.doc(user.uid).set(_user.toJson());
         emit(AuthenticationSuccessful(_user));
       }
     } on NoSuchMethodError {
@@ -81,10 +81,10 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         name: name)) {
       try {
         emit(AuthenticationLoading());
-        AuthResult _user = await _auth.createUserWithEmailAndPassword(
+        UserCredential _user = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
         _sharedPreferencesHelper.saveUid(_user.user.uid);
-        _collectionReference.document(_user.user.uid).setData(UserEntity(
+        _collectionReference.doc(_user.user.uid).set(UserEntity(
                 'New User',
                 DateTime.now().subtract(Duration(days: 100)).toString(),
                 email,
@@ -151,14 +151,14 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     if (validateEmailAndPassword(email: email, password: password)) {
       try {
         emit(AuthenticationLoading());
-        AuthResult _user = await _auth.signInWithEmailAndPassword(
+        UserCredential _user = await _auth.signInWithEmailAndPassword(
             email: email, password: password);
         _sharedPreferencesHelper.saveUid(_user.user.uid);
         emit(AuthenticationSuccessful(UserEntity.fromJsonMap(
             await _collectionReference
-                .document(_user.user.uid)
+                .doc(_user.user.uid)
                 .get()
-                .then((value) => value.data))));
+                .then((value) => value.data()))));
       } catch (e) {
         emit(AuthenticationError(AuthExceptionHandler.generateExceptionMessage(
             AuthExceptionHandler.handleException(e))));

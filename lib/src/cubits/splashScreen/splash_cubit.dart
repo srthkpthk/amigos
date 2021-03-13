@@ -1,6 +1,7 @@
 import 'package:amigos/src/model/userModel/UserEntity.dart';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:meta/meta.dart';
 
@@ -16,9 +17,9 @@ class SplashCubit extends Cubit<SplashState> {
     if (uid == null) {
       emit(UnAuthenticatedUser());
     } else {
-      emit(AuthenticatedUser(await Firestore.instance
+      emit(AuthenticatedUser(await FirebaseFirestore.instance
           .collection('Users')
-          .document(uid)
+          .doc(uid)
           .get()
           .then((value) => UserEntity.fromJsonMap(value.data()))));
     }

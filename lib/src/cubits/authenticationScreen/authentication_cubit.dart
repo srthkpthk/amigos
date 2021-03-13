@@ -49,7 +49,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
             'New User',
             DateTime.now().subtract(Duration(days: 100)).toString(),
             user.email,
-            await FirebaseMessaging().getToken(),
+           'await FirebaseMessaging().getToken()',
+            // TODO: 13/03/21 firebase messaging fix krna hai
             0,
             0,
             [],
@@ -88,7 +89,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
                 'New User',
                 DateTime.now().subtract(Duration(days: 100)).toString(),
                 email,
-                await FirebaseMessaging().getToken(),
+               ' await FirebaseMessaging().getToken(),',
                 0,
                 0,
                 [],
